@@ -15,9 +15,9 @@ export const Layout = ({ children }) => {
         <div className="flex flex-col justify-center items-center text-center lg:p-8">
           <div className="mb-4">
             <img
-              src="/path-to-logo.png"
+              src="/logo.png"
               alt="Logo Here"
-              className="w-16 mx-auto"
+              className="mx-auto"
             />
           </div>
           <h1 className="text-3xl font-bold mb-4 text-white">
