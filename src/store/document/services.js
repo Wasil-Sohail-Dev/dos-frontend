@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "helper/api";
-import { deleteDocsApi, documentUpload, getalldocs, updateDocsCategoryApiConst } from "./contraints";
+import { deleteDocsApi, documentUpload, getalldocs, getSummaryDocs, updateDocsCategoryApiConst } from "./contraints";
 import toast from "react-hot-toast";
 import axiosImage from "helper/api-image";
 
@@ -45,9 +45,9 @@ export const UploadDocumentApi = createAsyncThunk(
 
 export const getallDocsFunApi = createAsyncThunk(
   "docs/getallDocs",
-  async ({ onSuccess }) => {
+  async ({ onSuccess,isSummaryDocs }) => {
     try {
-      const response = await axios.get(getalldocs);
+      const response = await axios.get(isSummaryDocs?getSummaryDocs:getalldocs);
       console.log("response in get all docs => ", response.data);
       if (response.data.status === "success") {
         if (onSuccess) {

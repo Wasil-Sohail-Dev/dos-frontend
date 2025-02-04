@@ -21,16 +21,17 @@ export const Summaries = () => {
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState(null);
   const { isLoading  } = useSelector((state) => state.summary.summary);
-  const { data, isLoading:docsLoading } = useSelector((state) => state.document.documentAll);
+  const { data: allDocs, isLoading:docsLoading } = useSelector((state) => state.document.documentAll);
 
-  const allDocs = data?.filter(doc => doc.summary);
 
   useEffect(() => {
     dispatch(getallDocsFunApi({
       onSuccess: () => {
       },
+      isSummaryDocs:true,
     }));
   }, []);
+
 
   const dispatch = useDispatch();
   const audioRecorderRef = useRef(null);
@@ -68,6 +69,7 @@ export const Summaries = () => {
             setSummary(null);
             setShowModal(false);
             dispatch(getallDocsFunApi({
+
               onSuccess: () => {
               },
             }));
