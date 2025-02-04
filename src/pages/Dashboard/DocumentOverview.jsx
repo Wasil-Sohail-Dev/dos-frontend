@@ -17,7 +17,11 @@ export const DocumentOverview = () => {
 
   const fetchDocuments = () => {
     dispatch(
-      getallDocsFunApi()
+      getallDocsFunApi({
+        onSuccess: () => {
+          // Handle success if needed
+        },
+      })
     );
   }
 
