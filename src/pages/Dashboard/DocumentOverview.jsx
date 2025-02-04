@@ -87,7 +87,7 @@ export const DocumentOverview = () => {
     setSelectedCategory("")
     dispatch(
       deleteDocsFunApi({
-        data: { docsId }, 
+        data: JSON.stringify({ docsId }), 
         onSuccess: () => {
           fetchDocuments();
           console.log("Document deleted successfully!");

@@ -41,20 +41,10 @@ const sidebarList = [
     link: "/document-overview",
   },
   {
-    name: "Settings",
-    icon: <IoSettingsSharp />,
-    link: "/setting",
-  },
-  {
     name: "Ask Questions to AI",
     icon: <FaCommentDots />,
     link: "/chat",
-  },
-  {
-    name: "Help Center",
-    icon: <IoIosHelpCircle />,
-    link: "/help-center",
-  },
+  }
 ];
 
 export const SideBarDashboard = () => {
