@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { AiOutlineCloudUpload, AiOutlineFile, AiOutlineFolder } from "react-icons/ai";
+import { AiOutlineFile } from "react-icons/ai";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaFilePdf, FaFileImage, FaFilePowerpoint } from "react-icons/fa";
-import { MdError, MdDownload, MdDelete, MdEdit, MdFolder } from "react-icons/md";
+import { MdDownload, MdDelete, MdEdit, MdFolder } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteDocsFunApi, getallDocsFunApi, updateDocsCategoryApi } from "store/document/services";
 import { IoClose } from "react-icons/io5";
@@ -10,18 +10,14 @@ import { getFileName, getFileType, getTimeAgo } from "helper/docsFunctions";
 
 export const DocumentOverview = () => {
   const dispatch = useDispatch();
-  const { data: allDocs, isLoading } = useSelector((state) => state.document.documentAll);
+  const { data: allDocs } = useSelector((state) => state.document.documentAll);
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const fetchDocuments = () => {
     dispatch(
-      getallDocsFunApi({
-        onSuccess: () => {
-          // Handle success if needed
-        },
-      })
+      getallDocsFunApi()
     );
   }
 

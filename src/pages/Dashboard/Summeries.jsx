@@ -67,9 +67,14 @@ export const Summaries = () => {
             setAudioFile(null);
             setSummary(null);
             setShowModal(false);
+            dispatch(getallDocsFunApi({
+              onSuccess: () => {
+              },
+            }));
           },
         })
       );
+
     },
   });
 

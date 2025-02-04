@@ -1,7 +1,7 @@
 import API from "axios";
 
 const axiosNgrok = API.create({
-  baseURL: "https://a330-173-208-156-111.ngrok-free.app", // Add baseURL for ngrok
+  baseURL: "https://759c-173-208-156-111.ngrok-free.app", // Add baseURL for ngrok
 });
 
 axiosNgrok.interceptors.request.use((request) => {
