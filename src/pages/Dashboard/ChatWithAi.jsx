@@ -151,12 +151,6 @@ const ChatWithAi = () => {
                 />
                 <div className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 flex gap-1 sm:gap-2 items-center">
                   <button
-                    type="button"
-                    className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    <IoIosAttach className="text-lg sm:text-xl text-black" />
-                  </button>
-                  <button
                     type="submit"
                     className={`bg-blue-500 text-white p-1.5 sm:p-2 rounded-lg ${
                       isLoading
