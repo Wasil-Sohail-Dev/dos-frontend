@@ -7,6 +7,8 @@ import axiosImage from "helper/api-image";
 export const UploadDocumentApi = createAsyncThunk(
   "document/upload",
   async ({ data, onSuccess }) => {
+    console.log("data in upload document api => ", data);
+    
     try {
       const response = await axiosImage.post(documentUpload, data);
       console.log("response in document upload Fun Api => ", response.data);

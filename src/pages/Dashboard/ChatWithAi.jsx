@@ -8,13 +8,16 @@ import PreviewChart from "../../component/Layout/Dashboard/PreviewChart";
 const TypingAnimation = ({ text }) => {
   const [displayedText, setDisplayedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
+  const scrollToBottom = useRef(null);
 
   useEffect(() => {
     if (currentIndex < text.length) {
       const timeout = setTimeout(() => {
         setDisplayedText(prev => prev + text[currentIndex]);
         setCurrentIndex(prev => prev + 1);
-      }, 4); // Adjust speed here
+        // Scroll after each character is added
+        scrollToBottom.current?.();
+      }, 4);
 
       return () => clearTimeout(timeout);
     }
@@ -105,7 +108,12 @@ const ChatWithAi = () => {
                     }`}
                   >
                     <p className="font-normal text-sm sm:text-base leading-[22px] sm:leading-[25px]">
-                      {msg.type === 'ai' ? <TypingAnimation text={msg.content} /> : msg.content}
+                      {msg.type === 'ai' ? (
+                        <TypingAnimation 
+                          text={msg.content} 
+                          ref={(el) => el && (el.scrollToBottom = scrollToBottom)}
+                        />
+                      ) : msg.content}
                     </p>
                   </div>
                 </div>

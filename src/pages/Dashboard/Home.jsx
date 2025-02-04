@@ -5,7 +5,6 @@ import { useDispatch } from "react-redux";
 import { UploadDocumentApi } from "store/document/services";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import ButtonWithLoading from "component/LoadingButton";
 import { useNavigate } from "react-router";
 import SideModal from "component/Layout/Dashboard/SideModal";
 
@@ -56,28 +55,6 @@ export const DashboardHomePage = () => {
       console.log("Form submitted with values:", values);
     },
   });
-
-  // const handleUpload = (event) => {
-  //   const userId = localStorage.getItem("userId");
-
-  //   const formData = new FormData();
-  //   files.forEach((file) => {
-  //     formData.append(`file`, file);
-  //   });
-  //   formData.append("id", userId);
-
-  //   dispatch(
-  //     UploadDocumentApi({
-  //       data: formData,
-  //       onSuccess: () => {
-  //         setFiles([]);
-  //       },
-  //       onError: (error) => {
-  //         console.error("Upload failed", error);
-  //       },
-  //     })
-  //   );
-  // };
 
   const handleDrop = (event) => {
     event.preventDefault();

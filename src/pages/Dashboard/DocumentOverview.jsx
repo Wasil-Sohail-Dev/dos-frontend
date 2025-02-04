@@ -11,7 +11,6 @@ import { getFileName, getFileType, getTimeAgo } from "helper/docsFunctions";
 export const DocumentOverview = () => {
   const dispatch = useDispatch();
   const { data: allDocs, isLoading } = useSelector((state) => state.document.documentAll);
-  console.log("allDocs",allDocs)
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -101,7 +100,7 @@ export const DocumentOverview = () => {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen p-4 lg:p-10">
       {/* Upload Section */}
-      <div className="w-full max-w-[900px] bg-white rounded-2xl border-2 border-dashed border-gray-200 mb-6">
+      {/* <div className="w-full max-w-[900px] bg-white rounded-2xl border-2 border-dashed border-gray-200 mb-6">
         <div className="p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 flex items-center justify-center">
@@ -116,7 +115,7 @@ export const DocumentOverview = () => {
             SELECT FILE
           </button>
         </div>
-      </div>
+      </div> */}
 
       {/* Files List */}
       <div className="w-full max-w-[900px] bg-white rounded-lg shadow-sm">

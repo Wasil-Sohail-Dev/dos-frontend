@@ -1,11 +1,14 @@
 import ButtonWithLoading from "component/LoadingButton";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { AiFillDelete } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { AlDocsSummaryApi } from "store/summary/services";
 import AudioWaveform from 'component/Layout/Dashboard/AudioWaveform';
 import AudioRecorder from 'component/Layout/Dashboard/AudioRecorder';
-// import { AlDocsSummaryApi } from "store/summary/services";
+import SideModal from "component/Layout/Dashboard/SideModal";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { getallDocsFunApi, UploadDocumentApi } from "store/document/services";
 
 export const Summaries = () => {
   const [showSpeechSection, setShowSpeechSection] = useState(false);
@@ -14,10 +17,61 @@ export const Summaries = () => {
   const [summary, setSummary] = useState();
   const [audioUrl, setAudioUrl] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [selectedDoc, setSelectedDoc] = useState(null);
   const { isLoading  } = useSelector((state) => state.summary.summary);
+  const { data, isLoading:docsLoading } = useSelector((state) => state.document.documentAll);
+
+  const allDocs = data?.filter(doc => doc.summary);
+
+  useEffect(() => {
+    dispatch(getallDocsFunApi({
+      onSuccess: () => {
+      },
+    }));
+  }, []);
 
   const dispatch = useDispatch();
   const audioRecorderRef = useRef(null);
+
+
+  const validationSchema = Yup.object({
+    folderName: Yup.string().required("Folder Name is required"),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      folderName: "",
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      const formData = new FormData();
+      if(file) {
+        formData.append("file", file);
+      }
+      if(audioFile) {
+        formData.append("file", audioFile);
+      }
+      formData.append("id", user?.id);
+      formData.append("folderName", values.folderName);
+      formData.append("summary", summary);
+
+      dispatch(
+        UploadDocumentApi({
+          data: formData,
+          onSuccess: () => {
+            setFile(null);
+            setAudioFile(null);
+            setSummary(null);
+            setShowModal(false);
+          },
+        })
+      );
+    },
+  });
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -25,7 +79,7 @@ export const Summaries = () => {
   };
 
   const handleUpload = () => {
-    if (!file&&!audioFile) {
+    if (!file && !audioFile) {
       alert("Please select a file before uploading.");
       return;
     }
@@ -39,10 +93,8 @@ export const Summaries = () => {
     dispatch(
       AlDocsSummaryApi({
         data: formData,
-        isFile: file?true:false,
+        isFile: file ? true : false,
         onSuccess: (data) => {
-          console.log(data,"dadatadatata");
-          
           setSummary(data);
         },
         onError: (error) => {
@@ -115,24 +167,17 @@ export const Summaries = () => {
     }
   };
 
-  const reports = [
-    { name: "Medical lab report", time: "3m ago", type: "folder" },
-    { name: "Heart Report", time: "3 days ago", type: "folder" },
-    { name: "Brain report.pdf", time: "3 days ago", type: "document" },
-    { name: "Normal Checkup", time: "7 days ago", type: "image" },
-    { name: "Blood pressure report", time: "3m ago", type: "folder" },
-    { name: "Heart Report", time: "3 days ago", type: "folder" },
-    { name: "Heart Report.pdf", time: "3 days ago", type: "document" },
-    { name: "Lab Report", time: "7 days ago", type: "image" },
-  ];
-
-  const renderIcon = (type) => {
-    switch (type) {
-      case "folder":
-        return "📁";
-      case "document":
+  const renderIcon = (fileUrl) => {
+    const extension = fileUrl.split('.').pop().toLowerCase();
+    switch (extension) {
+      case 'pdf':
         return "📄";
-      case "image":
+      case 'wav':
+      case 'mp3':
+        return "🎵";
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
         return "🖼️";
       default:
         return "📁";
@@ -143,6 +188,89 @@ export const Summaries = () => {
     setFile(null);
     setAudioFile(null);
     setAudioUrl(null);
+  };
+
+  const handleOpenModal = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleCancel = () => {
+    setFile(null);
+    setAudioFile(null);
+    setAudioUrl(null);
+    setSummary(null);
+    setShowModal(false);
+  };
+
+  const handleViewDoc = (doc) => {
+    setSelectedDoc(doc);
+    setShowSummaryModal(true);
+  };
+
+  const handleCloseSummaryModal = () => {
+    setShowSummaryModal(false);
+    setSelectedDoc(null);
+  };
+
+  const SummaryModal = ({ doc, onClose }) => {
+    if (!doc) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div className="bg-white w-full max-w-3xl rounded-lg shadow-xl p-6 m-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-800">
+                {decodeURIComponent(doc.fileUrl.split('/').pop())}
+              </h2>
+              <div className="flex items-center space-x-2 text-sm text-gray-500 mt-1">
+                <span>{doc.category}</span>
+                <span>•</span>
+                <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="border-t border-b border-gray-200 py-4 my-4">
+            <h3 className="text-lg font-medium text-gray-700 mb-2">Summary</h3>
+            {doc.summary ? (
+              <p className="text-gray-600 whitespace-pre-wrap">{doc.summary}</p>
+            ) : (
+              <p className="text-gray-500 italic">No summary available for this document.</p>
+            )}
+          </div>
+
+          <div className="flex justify-end gap-4">
+            <a
+              href={doc.fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Open Document
+            </a>
+            <button
+              onClick={onClose}
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const renderSpeechSection = () => (
@@ -188,19 +316,31 @@ export const Summaries = () => {
           </p>
         </div>
         <div className="flex justify-end gap-4 mt-4">
-          <button className="bg-gray-200 text-gray-600 px-6 py-2 rounded-md hover:bg-gray-300">
-            Save
-          </button>
-          {/* <button className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600">
-            Generate Summary
-          </button> */}
-          <ButtonWithLoading
-                onClick={handleUpload}
-                isLoading={isLoading}
-                className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600"
+          {summary && (
+            <>
+              <button 
+                onClick={handleCancel}
+                className="px-4 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50"
               >
-                Generate Summary
-              </ButtonWithLoading>
+                Cancel
+              </button>
+              <button
+                onClick={handleOpenModal}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              >
+                Save
+              </button>
+            </>
+          )}
+          {!summary && audioFile && (
+            <ButtonWithLoading
+              onClick={handleUpload}
+              isLoading={isLoading}
+              className="bg-blue-500 text-white rounded-lg px-4 py-2"
+            >
+              Generate
+            </ButtonWithLoading>
+          )}
         </div>
       </div>
     </div>
@@ -283,41 +423,99 @@ export const Summaries = () => {
           <div className="bg-white shadow-md rounded-lg p-6 w-full md:w-1/2">
             <h2 className="text-lg font-semibold text-gray-700">Summary</h2>
             <div className="overflow-y-auto h-72 border border-gray-300 rounded-lg p-4 mt-4">
-              <p className="text-sm text-gray-600">{summary} </p>
+              <p className="text-sm text-gray-600">{summary}</p>
             </div>
+            {summary && (
+              <div className="flex justify-end gap-4 mt-4">
+                <button 
+                  onClick={handleCancel}
+                  className="px-4 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleOpenModal}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                >
+                  Save
+                </button>
+              </div>
+            )}
           </div>
         </div>
       ) : renderSpeechSection()}
 
+      {showModal && (
+        <SideModal formik={formik} handleCloseModal={handleCloseModal} />
+      )}
+
       <div className="mt-8 max-w-4xl mx-auto bg-white shadow-md rounded-md overflow-hidden">
-        <ul className="divide-y divide-gray-200">
-          {reports.map((report, index) => (
-            <li key={index} className="flex items-center justify-between p-4">
-              <div className="flex items-center space-x-4">
-                <span className="text-2xl">{renderIcon(report.type)}</span>
-                <div>
-                  <p className="text-gray-800 font-medium">{report.name}</p>
-                  <p className="text-gray-500 text-sm">{report.time}</p>
-                </div>
-              </div>
-              <button className="px-2 py-1 text-gray-400 border border-gray-300 rounded-md hover:text-white hover:bg-blue-600">
-                View
-              </button>
-            </li>
-          ))}
-        </ul>
-        <div className="flex items-center justify-between p-4 border-t">
-          <p className="text-sm text-gray-500">5 results (Page 1 of 2)</p>
-          <div className="flex space-x-2">
-            <button className="px-4 py-2 text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200">
-              Previous
-            </button>
-            <button className="px-4 py-2 text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200">
-              Next
-            </button>
+        {docsLoading ? (
+          <div className="flex justify-center items-center p-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
           </div>
-        </div>
+        ) : allDocs && allDocs.length > 0 ? (
+          <>
+            <ul className="divide-y divide-gray-200">
+              {allDocs.map((doc) => (
+                <li key={doc.docsId} className="flex items-center justify-between p-4 hover:bg-gray-50">
+                  <div className="flex items-center space-x-4">
+                    <span className="text-2xl">{renderIcon(doc.fileUrl)}</span>
+                    <div>
+                      <p className="text-gray-800 font-medium">
+                        {decodeURIComponent(doc.fileUrl.split('/').pop())}
+                      </p>
+                      <div className="flex items-center space-x-2 text-sm text-gray-500">
+                        <span>{doc.category}</span>
+                        <span>•</span>
+                        <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {doc?.summary && (
+                      <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                        Summarized
+                      </span>
+                    )}
+                    <button 
+                      onClick={() => handleViewDoc(doc)}
+                      disabled={!doc?.summary}
+                      className="px-3 py-1 text-gray-600 border border-gray-300 rounded-md hover:text-white hover:bg-blue-600 transition-colors"
+                    >
+                      View
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <div className="flex items-center justify-between p-4 border-t">
+              <p className="text-sm text-gray-500">{allDocs.length} documents</p>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center p-8 text-gray-500">
+            <svg
+              className="w-16 h-16 mb-4 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            <p>No documents found</p>
+          </div>
+        )}
       </div>
+
+      {showSummaryModal && (
+        <SummaryModal doc={selectedDoc} onClose={handleCloseSummaryModal} />
+      )}
     </div>
   );
 };
