@@ -133,10 +133,11 @@ export const ProfileUpdate = () => {
           </div>
         </div>
 
-        <div className="w-full lg:w-1/2">
+        <div className="w-full lg:w-[49.2%]">
           <label className="bg-white px-1 text-sm">Phone Number</label>
           <PhoneInput
             international
+
             country="us"
             value={formik.values.providerPhone}
             onChange={(value, country) => {
