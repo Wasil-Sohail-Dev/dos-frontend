@@ -22,17 +22,15 @@ export const loginFunApi = createAsyncThunk(
       const response = await axios.post(loginApi, data);
       console.log("response in loginFun => ", response.data);
       if (response.data.status === "success") {
-
         const responseData = response.data.data;
         localStorage.setItem("token", responseData.token);
         localStorage.setItem("user", JSON.stringify(responseData.user));
 
-          if (onSuccess) {
-            onSuccess(responseData.user.email);
-            toast.success(response.data.message);
-          }
-          return;
-
+        if (onSuccess) {
+          onSuccess(responseData.user.email);
+          toast.success(response.data.message);
+        }
+        return;
       } else {
         console.log("Error response in login Api => ", response.data);
         const err =
@@ -65,17 +63,14 @@ export const registerFunApi = createAsyncThunk(
       const response = await axios.post(registerApi, data);
       console.log("response in registerFunApi => ", response.data);
       if (response.data.status === "success") {
+        const responseData = response.data.data;
 
-        const responseData = response.data.data;  
- 
-          if (onSuccess) {
+        if (onSuccess) {
+          onSuccess(responseData.user);
+        }
+        toast.success(response.data.message);
 
-            onSuccess(responseData.user)
-          }
-          toast.success(response.data.message);
-
-          return;
-      
+        return;
       } else {
         console.log("Error response in register Api => ", response.data);
         const err =
@@ -108,17 +103,14 @@ export const healthProviderDetailFunApi = createAsyncThunk(
       const response = await axios.post(healthProviderApi, data);
       console.log("response in healthProviderFunApi => ", response.data);
       if (response.data.status === "success") {
+        const responseData = response.data.data;
+        console.log("77", responseData.user);
+        if (onSuccess) {
+          onSuccess(responseData.user);
+        }
+        toast.success(response.data.message);
 
-        const responseData = response.data.data;  
-        console.log("77",responseData.user)       
-          if (onSuccess) {
-
-            onSuccess(responseData.user)
-          }
-          toast.success(response.data.message);
-
-          return;
-      
+        return;
       } else {
         console.log("Error response in health Provider Api => ", response.data);
         const err =
@@ -153,7 +145,7 @@ export const verifyOtpFunApi = createAsyncThunk(
       console.log("response in verifyOtpApi => ", response.data);
       if (response.data.status === "success") {
         localStorage.removeItem("selectedBusinessId");
-        
+
         const responseData = response.data.data;
 
         if (responseData.user.role !== "user") {
@@ -211,7 +203,6 @@ export const checkTokenIsValidFunApi = createAsyncThunk(
       const response = await axios.get(checkTokenIsValidApi);
       console.log("response in checkTokenIsValidFun => ", response.data);
       if (response.data.status === "success") {
-
         // localStorage.removeItem('selectedBusinessId')
         return response.data.data;
       } else {
@@ -286,7 +277,7 @@ export const logoutFunApi = createAsyncThunk(
       if (response.data.status === "success") {
         // Clear local storage
         localStorage.clear();
-        
+
         if (onSuccess) {
           onSuccess();
         }
@@ -356,8 +347,8 @@ export const getAllUsersFunApi = createAsyncThunk(
 export const getUserDetailsFunApi = createAsyncThunk(
   "auth/getUserDetails",
   async ({ data, onSuccess }) => {
-    console.log(data,"dataaa");
-    
+    console.log(data, "dataaa");
+
     try {
       const response = await axios.post(getUserDetailsApi, data);
       console.log("response in getUserDetails => ", response.data);
@@ -404,7 +395,10 @@ export const updateUserDetailsFunApi = createAsyncThunk(
         }
         return response.data.user;
       } else {
-        console.log("Error response in updateUserDetails Api => ", response.data);
+        console.log(
+          "Error response in updateUserDetails Api => ",
+          response.data
+        );
         const err =
           response?.data?.message ||
           response?.message ||

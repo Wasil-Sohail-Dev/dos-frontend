@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 
 export const Login = () => {
   const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const { isLoading } = useSelector((state) => state.auth);
 
   const validationSchema = Yup.object({
@@ -17,7 +17,7 @@ export const Login = () => {
       .email("Invalid email address")
       .required("Email is required"),
     password: Yup.string()
-      .min(8, "Password must be at least 8 characters")   
+      .min(8, "Password must be at least 8 characters")
       .required("Password is required"),
   });
 
@@ -32,9 +32,9 @@ export const Login = () => {
         loginFunApi({
           data: values,
           onSuccess: () => {
-            navigate("/")
+            navigate("/");
           },
-        }) 
+        })
       );
       console.log("Form submitted with values:", values);
     },
@@ -98,10 +98,7 @@ export const Login = () => {
           </ButtonWithLoading>
           <div className="w-full flex  justify-center mx-auto items-center space-x-2">
             <p className="text-sm text-gray-600">New User?</p>
-            <Link
-              to="/signup"
-              className="text-sm text-black-500 underline"
-            >
+            <Link to="/signup" className="text-sm text-black-500 underline">
               SIGN UP HERE
             </Link>
           </div>{" "}

@@ -1,14 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { useDispatch } from "react-redux";
-import { getUserDetailsFunApi, updateUserDetailsFunApi } from "store/auth/services";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getUserDetailsFunApi,
+  updateUserDetailsFunApi,
+} from "store/auth/services";
+import ButtonWithLoading from "component/LoadingButton";
+import { FaCamera } from "react-icons/fa";
 
 export const ProfileUpdate = () => {
   const dispatch = useDispatch();
   const [userData, setUserData] = useState(null);
+  const { isLoading } = useSelector((state) => state.auth.editUser);
+  const [isFormChanged, setIsFormChanged] = useState(false);
+  const initialValuesRef = useRef(null);
 
   const fetchUserDetails = (userId) => {
     dispatch(
@@ -16,14 +24,17 @@ export const ProfileUpdate = () => {
         data: { userId },
         onSuccess: (userData) => {
           setUserData(userData);
-          formik.setValues({
+          const initialValues = {
             firstName: userData.firstName || "",
             lastName: userData.lastName || "",
             email: userData.email || "",
             address: userData.healthProvider?.providerAddress || "",
-            providerPhone: userData.phone?.code+userData.phone?.number || "",
+            providerPhone: userData.phone?.code + userData.phone?.number || "",
             countryCode: userData.phone?.code || "",
-          });
+          };
+          formik.setValues(initialValues);
+          initialValuesRef.current = initialValues;
+          setIsFormChanged(false);
         },
       })
     );
@@ -39,7 +50,9 @@ export const ProfileUpdate = () => {
   const validationSchema = Yup.object({
     firstName: Yup.string().required("First Name is required"),
     lastName: Yup.string().required("Last Name is required"),
-    email: Yup.string().email("Invalid email format").required("Email is required"),
+    email: Yup.string()
+      .email("Invalid email format")
+      .required("Email is required"),
     address: Yup.string().required("Address is required"),
     providerPhone: Yup.string().required("Provider Phone is required"),
   });
@@ -58,7 +71,6 @@ export const ProfileUpdate = () => {
       const user = JSON.parse(localStorage.getItem("user"));
       if (!user?.id) return;
 
-      // Format the data according to the API requirements
       const formattedData = {
         userId: user.id,
         firstName: values.firstName,
@@ -66,29 +78,67 @@ export const ProfileUpdate = () => {
         email: values.email,
         phone: {
           code: values.countryCode,
-          number: values.providerPhone.replace(values.countryCode, "") // Remove country code from the number
+          number: values.providerPhone.replace(values.countryCode, ""),
         },
-        // Preserve existing data
         role: userData?.role,
-        active: userData?.active
+        active: userData?.active,
       };
 
       dispatch(
         updateUserDetailsFunApi({
           data: formattedData,
           onSuccess: (updatedUser) => {
-            // Refresh user details after update
             fetchUserDetails(user.id);
+            setIsFormChanged(false);
           },
         })
       );
     },
   });
 
+  useEffect(() => {
+    if (formik.values && initialValuesRef.current) {
+      const hasChanges = Object.keys(formik.values).some(
+        (key) => formik.values[key] !== initialValuesRef.current[key]
+      );
+      setIsFormChanged(hasChanges);
+    }
+  }, [formik.values]);
+
   return (
     <div className="container px-4 sm:px-6 lg:px-10">
       <h2 className="text-xl mb-4 mt-6">Personal Information</h2>
       <form className="space-y-4" onSubmit={formik.handleSubmit}>
+        <div className="flex justify-start mb-8">
+          <div className="relative">
+            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500">
+              {false ? (
+                <img
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-400 text-4xl">
+                    {formik.values.firstName?.charAt(0)?.toUpperCase() || "U"}
+                  </span>
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              // onClick={() => fileInputRef.current?.click()}
+              className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full text-white hover:bg-blue-600"
+            >
+              <FaCamera size={16} />
+            </button>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+            />
+          </div>
+        </div>
         <div className="flex flex-col lg:flex-row lg:space-x-4 space-y-4 lg:space-y-0">
           <div className="w-full lg:w-1/2">
             <label className="bg-white px-1 text-sm">First Name</label>
@@ -137,7 +187,6 @@ export const ProfileUpdate = () => {
           <label className="bg-white px-1 text-sm">Phone Number</label>
           <PhoneInput
             international
-
             country="us"
             value={formik.values.providerPhone}
             onChange={(value, country) => {
@@ -210,24 +259,26 @@ export const ProfileUpdate = () => {
         </div>
 
         <div className="fixed bottom-4 sm:bottom-10 right-4 sm:right-10 flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0 w-[calc(100%-2rem)] sm:w-auto">
-          <button 
+          <button
             type="button"
-            className="w-full sm:w-32 bg-red-500 text-white rounded-md py-3 hover:bg-red-600"
+            className="w-full sm:w-40 bg-red-500 text-white rounded-md py-3 hover:bg-red-600"
           >
             Delete Account
           </button>
-          <button 
+          {/* <button 
             type="button"
             className="w-full sm:w-32 border rounded-md py-3 hover:bg-gray-50"
           >
             Cancel
-          </button>
-          <button
+          </button> */}
+          <ButtonWithLoading
             type="submit"
-            className="w-full sm:w-32 bg-blue-500 text-white rounded-md py-3 hover:bg-blue-600"
+            isLoading={isLoading}
+            disabled={!isFormChanged || isLoading}
+            className="w-full sm:w-40 bg-blue-500 flex justify-center items-center text-white rounded-md py-3 hover:bg-blue-600 disabled:opacity-50"
           >
             Save
-          </button>
+          </ButtonWithLoading>
         </div>
       </form>
     </div>

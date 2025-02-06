@@ -1,6 +1,7 @@
 import React from 'react'
+import ButtonWithLoading from "component/LoadingButton";
 
-const SideModal = ({formik, handleCloseModal}) => {
+const SideModal = ({formik, handleCloseModal, isLoading}) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
             <div className="w-full md:w-2/3 lg:w-2/5 bg-white h-full shadow-lg fixed right-0 top-0 animate-slide-in overflow-y-auto">
@@ -28,13 +29,15 @@ const SideModal = ({formik, handleCloseModal}) => {
                   >
                     Cancel
                   </button>
-                  <button
+                  <ButtonWithLoading
                     type="submit"
-                    className="px-6 md:px-12 py-2 md:py-3 bg-[#4285F4] text-white rounded-lg hover:bg-blue-600 transition-colors"
+                    className="px-6 md:px-12 py-2 md:py-3 bg-[#4285F4] text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={formik.handleSubmit}
+                    isLoading={isLoading}
+                    disabled={isLoading}
                   >
                     Finish
-                  </button>
+                  </ButtonWithLoading>
                 </div>
               </div>
             </div>

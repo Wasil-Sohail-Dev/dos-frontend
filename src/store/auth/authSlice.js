@@ -6,8 +6,8 @@ import {
   loginFunApi,
   registerFunApi,
   verifyOtpFunApi,
+  updateUserDetailsFunApi,
 } from "./services";
-
 
 const authSlice = createSlice({
   name: "auth",
@@ -19,7 +19,7 @@ const authSlice = createSlice({
     otpVerified: false,
     token: null,
     role: null,
-    dataFatched:false,
+    dataFatched: false,
     validToken: {
       valid: false,
       isLoading: false,
@@ -52,7 +52,7 @@ const authSlice = createSlice({
         state.token = action.payload?.token;
         state.role = action.payload?.user.role;
         state.isVerified = action.payload?.user.verified;
-        console.log("token", action.payload)
+        console.log("token", action.payload);
       })
       .addCase(loginFunApi.rejected, (state) => {
         state.isLoading = false;
@@ -64,7 +64,7 @@ const authSlice = createSlice({
         state.otpVerified = false;
       });
 
-      builder
+    builder
       .addCase(registerFunApi.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -88,7 +88,7 @@ const authSlice = createSlice({
         state.otpVerified = false;
       });
 
-      builder
+    builder
       .addCase(healthProviderDetailFunApi.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -112,7 +112,7 @@ const authSlice = createSlice({
         state.otpVerified = false;
       });
 
-      builder
+    builder
       .addCase(verifyOtpFunApi.pending, (state) => {
         state.isLoading = true;
       })
@@ -138,7 +138,7 @@ const authSlice = createSlice({
         state.otpVerified = false;
       });
 
-      builder
+    builder
       .addCase(checkTokenIsValidFunApi.pending, (state) => {
         state.validToken.isLoading = true;
       })
@@ -151,7 +151,8 @@ const authSlice = createSlice({
         state.isVerified = action.payload.user.verified;
         state.token = action.payload.token;
         state.role = action.payload.user.role;
-        state.otpVerified = localStorage.getItem("otpVerified")?.toString() === "true";
+        state.otpVerified =
+          localStorage.getItem("otpVerified")?.toString() === "true";
       })
       .addCase(checkTokenIsValidFunApi.rejected, (state) => {
         localStorage.removeItem("token");
@@ -166,19 +167,41 @@ const authSlice = createSlice({
         state.token = null;
         state.otpVerified = false;
       });
-      builder.addCase(autoLoginFunApi.fulfilled, (state, action) => {
-        localStorage.setItem("token", action.payload.token);
-        state.validToken.isLoading = false;
-        state.validToken.valid = true;
-        state.validToken.dataFetched = true;
-        state.isAuthenticated = true;
-        state.user = action.payload.user;
-        state.isVerified = action.payload.user.verified;
-        state.token = action.payload.token;
-        state.role = action.payload.user.role;
-        state.otpVerified = localStorage.getItem("otpVerified")?.toString() === "true";
-      });
+    builder.addCase(autoLoginFunApi.fulfilled, (state, action) => {
+      localStorage.setItem("token", action.payload.token);
+      state.validToken.isLoading = false;
+      state.validToken.valid = true;
+      state.validToken.dataFetched = true;
+      state.isAuthenticated = true;
+      state.user = action.payload.user;
+      state.isVerified = action.payload.user.verified;
+      state.token = action.payload.token;
+      state.role = action.payload.user.role;
+      state.otpVerified =
+        localStorage.getItem("otpVerified")?.toString() === "true";
+    });
 
+    builder
+      .addCase(updateUserDetailsFunApi.pending, (state) => {
+        state.editUser.isLoading = true;
+        state.editUser.error = null;
+      })
+      .addCase(updateUserDetailsFunApi.fulfilled, (state, action) => {
+        state.editUser.isLoading = false;
+        state.editUser.dataFatched = true;
+        state.editUser.error = null;
+        state.user = { ...state.user, ...action.payload };
+        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ ...storedUser, ...action.payload })
+        );
+      })
+      .addCase(updateUserDetailsFunApi.rejected, (state, action) => {
+        state.editUser.isLoading = false;
+        state.editUser.dataFatched = false;
+        state.editUser.error = action.error.message;
+      });
   },
 });
 

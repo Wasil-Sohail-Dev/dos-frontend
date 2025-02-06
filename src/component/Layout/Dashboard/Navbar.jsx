@@ -3,7 +3,8 @@ import { useSelector } from "react-redux";
 
 export const DashboardNavbar = () => {
   // Fetch user data from Redux store
-  const { firstName, lastName, email } = useSelector((state) => state.auth.user) || {};
+  const { firstName, lastName, email } =
+    useSelector((state) => state.auth.user) || {};
   const [isSearchVisible, setIsSearchVisible] = useState(false);
 
   return (
@@ -12,8 +13,8 @@ export const DashboardNavbar = () => {
       <div className="h-16 md:h-[96px] flex items-center justify-between px-4 md:px-6">
         {/* Greeting Section - with left padding for mobile menu button */}
         <div className="flex-shrink-0 pl-12 lg:pl-0">
-          <h3 className="text-white text-lg md:text-2xl font-bold truncate">
-            Hi, {firstName ? `${firstName} ${lastName}` : "Guest"}!
+          <h3 className="text-white text-lg md:text-2xl font-bold truncate break-words w-40 md:w-full">
+            Hi, {firstName ? `${firstName} ${lastName}` : "Guest"}
           </h3>
           <p className="text-white/80 text-xs md:text-sm">Welcome back!</p>
         </div>
@@ -21,7 +22,7 @@ export const DashboardNavbar = () => {
         {/* Right Section */}
         <div className="flex items-center gap-2 md:gap-6">
           {/* Search Toggle for Mobile */}
-          <button 
+          <button
             className="md:hidden w-10 h-10 bg-white/10 rounded-full flex items-center justify-center"
             onClick={() => setIsSearchVisible(!isSearchVisible)}
           >
@@ -99,7 +100,11 @@ export const DashboardNavbar = () => {
       </div>
 
       {/* Mobile Search Bar */}
-      <div className={`${isSearchVisible ? 'block' : 'hidden'} md:hidden absolute w-full px-4 py-3 bg-[#2D7FE7] shadow-lg`}>
+      <div
+        className={`${
+          isSearchVisible ? "block" : "hidden"
+        } md:hidden absolute w-full px-4 py-3 bg-[#2D7FE7] shadow-lg`}
+      >
         <div className="flex items-center bg-white px-4 py-2 rounded-full">
           <svg
             xmlns="http://www.w3.org/2000/svg"

@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineFile } from "react-icons/ai";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { FaFilePdf, FaFileImage, FaFilePowerpoint } from "react-icons/fa";
+import {
+  FaFilePdf,
+  FaFileImage,
+  FaFilePowerpoint,
+  FaSearch,
+} from "react-icons/fa";
 import { MdDownload, MdDelete, MdEdit, MdFolder } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteDocsFunApi, getallDocsFunApi, updateDocsCategoryApi } from "store/document/services";
+import {
+  deleteDocsFunApi,
+  getallDocsFunApi,
+  updateDocsCategoryApi,
+} from "store/document/services";
 import { IoClose } from "react-icons/io5";
 import { getFileName, getFileType, getTimeAgo } from "helper/docsFunctions";
+import Pagination from "component/Layout/Common/Pagination";
 
 export const DocumentOverview = () => {
   const dispatch = useDispatch();
@@ -14,6 +24,9 @@ export const DocumentOverview = () => {
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const docsPerPage = 5;
 
   const fetchDocuments = () => {
     dispatch(
@@ -23,16 +36,35 @@ export const DocumentOverview = () => {
         },
       })
     );
-  }
+  };
 
   useEffect(() => {
     fetchDocuments();
   }, [dispatch]);
 
   // Extract unique categories for the dropdown
-  const uniqueCategories = [...new Set(allDocs?.map(doc => doc.category) || [])];
+  const uniqueCategories = [
+    ...new Set(allDocs?.map((doc) => doc.category) || []),
+  ];
 
+  // Filter documents based on search (filename or category)
+  const filteredDocs =
+    allDocs?.filter((doc) => {
+      const fileName = getFileName(doc.fileUrl).toLowerCase();
+      const category = doc.category.toLowerCase();
+      const searchLower = searchTerm.toLowerCase();
+      return fileName.includes(searchLower) || category.includes(searchLower);
+    }) || [];
 
+  // Calculate pagination
+  const indexOfLastDoc = currentPage * docsPerPage;
+  const indexOfFirstDoc = indexOfLastDoc - docsPerPage;
+  const currentDocs = filteredDocs.slice(indexOfFirstDoc, indexOfLastDoc);
+  const totalPages = Math.ceil(filteredDocs.length / docsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   const handleMoveToFolder = (doc) => {
     setSelectedDoc(doc);
@@ -44,13 +76,15 @@ export const DocumentOverview = () => {
     if (!selectedDoc || !selectedCategory) return;
 
     // Find the category details from allDocs
-    const targetCategory = allDocs.find(doc => doc.category === selectedCategory);
+    const targetCategory = allDocs.find(
+      (doc) => doc.category === selectedCategory
+    );
     if (!targetCategory) return;
 
     const data = {
       docsId: selectedDoc.docsId,
       category: selectedCategory,
-      categoryId: targetCategory.categoryId
+      categoryId: targetCategory.categoryId,
     };
 
     dispatch(
@@ -80,50 +114,63 @@ export const DocumentOverview = () => {
   };
 
   const handleDeleteDocument = (docsId) => {
-    console.log("docsId", docsId)
-    setShowMoveModal(false)
-    setSelectedDoc(null)
-    setSelectedCategory("")
+    console.log("docsId", docsId);
+    setShowMoveModal(false);
+    setSelectedDoc(null);
+    setSelectedCategory("");
     dispatch(
       deleteDocsFunApi({
-        data: JSON.stringify({ docsId }), 
+        data: JSON.stringify({ docsId }),
         onSuccess: () => {
           fetchDocuments();
-          console.log("Document deleted successfully!");
         },
       })
     );
   };
 
-
+  const handleDownload = async (fileUrl, fileName) => {
+    try {
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download failed:', error);
+    }
+  };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen p-4 lg:p-10">
-      {/* Upload Section */}
-      {/* <div className="w-full max-w-[900px] bg-white rounded-2xl border-2 border-dashed border-gray-200 mb-6">
-        <div className="p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 flex items-center justify-center">
-              <AiOutlineCloudUpload className="text-gray-400 text-3xl" />
-            </div>
-            <div>
-              <p className="text-gray-900 font-medium">Select a file or drag and drop here</p>
-              <p className="text-gray-500 text-sm">JPG, PNG or PDF, file size no more than 10MB</p>
-            </div>
+    <div className="flex flex-col items-center min-h-screen p-4 lg:p-10">
+      <div className="w-full max-w-[900px] mb-6">
+        <div className="flex justify-end">
+          <div className="relative w-64">
+            <input
+              type="text"
+              placeholder="Search files or categories..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+            />
+            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           </div>
-          <button className="w-full sm:w-auto px-6 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50 transition-colors">
-            SELECT FILE
-          </button>
         </div>
-      </div> */}
+      </div>
 
-      {/* Files List */}
       <div className="w-full max-w-[900px] bg-white rounded-lg shadow-sm">
-        {allDocs?.map((doc, index) => {
+        {currentDocs.map((doc, index) => {
           const fileName = getFileName(doc.fileUrl);
           const fileType = getFileType(fileName);
           const timeAgo = getTimeAgo(doc.createdAt);
-          
+
           return (
             <div
               key={doc.docsId}
@@ -132,7 +179,9 @@ export const DocumentOverview = () => {
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 {getFileIcon(fileType)}
                 <div className="flex-1 min-w-0">
-                  <p className="text-gray-900 font-medium truncate">{fileName}</p>
+                  <p className="text-gray-900 font-medium truncate">
+                    {fileName}
+                  </p>
                   <div className="flex items-center gap-2 text-gray-500 text-sm">
                     <span>{timeAgo}</span>
                     <span>•</span>
@@ -147,15 +196,19 @@ export const DocumentOverview = () => {
                     <BsThreeDotsVertical className="text-black" />
                   </button>
                   <div className="absolute right-0 -mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block z-10">
-                    <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <button
+                      onClick={() => handleDownload(doc.fileUrl, fileName)}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
                       <MdDownload className="mr-2" /> Download
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleDeleteDocument(doc.docsId)}
-                      className="flex items-center w-full px-4 py-2 text-sm text-red-500 hover:bg-gray-100">
+                      className="flex items-center w-full px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
+                    >
                       <MdDelete className="mr-2" /> Delete
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleMoveToFolder(doc)}
                       className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
@@ -170,6 +223,22 @@ export const DocumentOverview = () => {
             </div>
           );
         })}
+
+        {/* Show message when no results found */}
+        {filteredDocs.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-8 text-gray-500">
+            <FaSearch className="text-4xl mb-2" />
+            <p>No documents found matching your search.</p>
+          </div>
+        )}
+        <div className="p-4 border-t">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            totalResults={filteredDocs.length}
+          />
+        </div>
       </div>
 
       {/* Move to Folder Modal showMoveModal */}
@@ -177,8 +246,10 @@ export const DocumentOverview = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-lg relative">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-[42px] leading-[46px] font-bold">Choose Folder</h3>
-              <button 
+              <h3 className="text-[42px] leading-[46px] font-bold">
+                Choose Folder
+              </h3>
+              <button
                 onClick={() => setShowMoveModal(false)}
                 className="text-gray-500 hover:text-gray-700 absolute top-2 right-2"
               >
