@@ -31,6 +31,11 @@ const sidebarList = [
     link: "/document-summeries",
   },
   {
+    name: "User Management",
+    icon: <FaUser />,
+    link: "/user-management",
+  },
+  {
     name: "User Profile",
     icon: <FaUser />,
     link: "/profile-update",

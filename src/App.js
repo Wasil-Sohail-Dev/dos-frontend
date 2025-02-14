@@ -16,6 +16,8 @@ import { OtpForm } from "component/Layout/AuthLayout/Auth/Otp";
 import { Summaries } from "pages/Dashboard/Summeries";
 import ChatWithAi from "./pages/Dashboard/ChatWithAi";
 import AdminDashboardHomePage from "pages/AdminDashboard/AdminDashboardHomePage";
+import AdminDocumentManagment from "pages/AdminDashboard/AdminDocumentManagment";
+import AdminUserManagement from "pages/AdminDashboard/AdminUserManagement";
 
 export default function App() {
   return (
@@ -36,9 +38,11 @@ export default function App() {
       <Route element={<DashboardLayout />}>
         <Route index element={<DashboardHomePage />} />
         {/* <Route index element={<AdminDashboardHomePage />} /> */}
-        {/* <Route path="doc-managment" element={<DocumentManagment />} /> */}
+
         <Route path="document-overview" element={<DocumentOverview />} />
         <Route path="document-managment" element={<DocumentManagement />} />
+        {/* <Route path="document-managment" element={<AdminDocumentManagment />} /> */}
+        <Route path="user-management" element={<AdminUserManagement />} />
         <Route path="profile-update" element={<ProfileUpdate />} />
         <Route path="document-summeries" element={<Summaries />} />
         <Route path="chat" element={<ChatWithAi />} />

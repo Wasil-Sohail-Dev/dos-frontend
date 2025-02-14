@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
 import { FaArrowUpLong } from "react-icons/fa6";
 import { IoIosAttach } from "react-icons/io";
 import { sendMessage } from "../../store/chat/services";
@@ -15,7 +16,6 @@ const TypingAnimation = ({ text }) => {
       const timeout = setTimeout(() => {
         setDisplayedText(prev => prev + text[currentIndex]);
         setCurrentIndex(prev => prev + 1);
-        // Scroll after each character is added
         scrollToBottom.current?.();
       }, 4);
 
@@ -28,6 +28,7 @@ const TypingAnimation = ({ text }) => {
 
 const ChatWithAi = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -43,19 +44,30 @@ const ChatWithAi = () => {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!message.trim() || isLoading) return;
+  // Handle initial message from navbar search
+  useEffect(() => {
+    const initialMessage = location.state?.initialMessage;
+    if (initialMessage) {
+      handleSubmit(null, initialMessage);
+      // Clear the location state to prevent re-sending on component remount
+      window.history.replaceState({}, document.title);
+    }
+  }, []);
 
-    const userMessage = message.trim();
+  const handleSubmit = async (e, initialMsg = null) => {
+    e?.preventDefault();
+    const messageToSend = initialMsg || message.trim();
+    
+    if (!messageToSend || isLoading) return;
+
     setMessage("");
     setIsLoading(true);
     setIsTyping(true);
-    setMessages(prev => [...prev, { type: 'user', content: userMessage }]);
+    setMessages(prev => [...prev, { type: 'user', content: messageToSend }]);
     
     try {
       await dispatch(sendMessage({
-        message: userMessage,
+        message: messageToSend,
         onSuccess: (data) => {
           setMessages(prev => [...prev, { type: 'ai', content: data }]);
           setIsTyping(false);

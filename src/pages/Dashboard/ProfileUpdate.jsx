@@ -10,6 +10,10 @@ import {
 } from "store/auth/services";
 import ButtonWithLoading from "component/LoadingButton";
 import { FaCamera } from "react-icons/fa";
+import { toast } from "react-hot-toast";
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const SUPPORTED_IMAGE_FORMATS = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 export const ProfileUpdate = () => {
   const dispatch = useDispatch();
@@ -17,6 +21,9 @@ export const ProfileUpdate = () => {
   const { isLoading } = useSelector((state) => state.auth.editUser);
   const [isFormChanged, setIsFormChanged] = useState(false);
   const initialValuesRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   const fetchUserDetails = (userId) => {
     dispatch(
@@ -24,6 +31,9 @@ export const ProfileUpdate = () => {
         data: { userId },
         onSuccess: (userData) => {
           setUserData(userData);
+          if (userData.profilePicture) {
+            setPreviewUrl(userData.profilePicture);
+          }
           const initialValues = {
             firstName: userData.firstName || "",
             lastName: userData.lastName || "",
@@ -46,6 +56,25 @@ export const ProfileUpdate = () => {
       fetchUserDetails(user.id);
     }
   }, []);
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type and size
+      if (!SUPPORTED_IMAGE_FORMATS.includes(file.type)) {
+        toast.error('Please upload a valid image file (JPG, PNG, or WebP)');
+        return;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error('File size should be less than 5MB');
+        return;
+      }
+
+      setSelectedImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+      setIsFormChanged(true);
+    }
+  };
 
   const validationSchema = Yup.object({
     firstName: Yup.string().required("First Name is required"),
@@ -71,22 +100,24 @@ export const ProfileUpdate = () => {
       const user = JSON.parse(localStorage.getItem("user"));
       if (!user?.id) return;
 
-      const formattedData = {
-        userId: user.id,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        phone: {
-          code: values.countryCode,
-          number: values.providerPhone.replace(values.countryCode, ""),
-        },
-        role: userData?.role,
-        active: userData?.active,
-      };
+      const formData = new FormData();
+      formData.append('userId', user.id);
+      formData.append('firstName', values.firstName);
+      formData.append('lastName', values.lastName);
+      formData.append('email', values.email);
+      formData.append('phone[code]', values.countryCode);
+      formData.append('phone[number]', values.providerPhone.replace(values.countryCode, ""));
+      formData.append('role', userData?.role);
+      formData.append('active', userData?.active);
+      formData.append('healthProvider[providerAddress]', values.address);
+
+      if (selectedImage) {
+        formData.append('profilePicture', selectedImage);
+      }
 
       dispatch(
         updateUserDetailsFunApi({
-          data: formattedData,
+          data: formData,
           onSuccess: (updatedUser) => {
             fetchUserDetails(user.id);
             setIsFormChanged(false);
@@ -100,10 +131,10 @@ export const ProfileUpdate = () => {
     if (formik.values && initialValuesRef.current) {
       const hasChanges = Object.keys(formik.values).some(
         (key) => formik.values[key] !== initialValuesRef.current[key]
-      );
+      ) || selectedImage !== null;
       setIsFormChanged(hasChanges);
     }
-  }, [formik.values]);
+  }, [formik.values, selectedImage]);
 
   return (
     <div className="container px-4 sm:px-6 lg:px-10">
@@ -112,8 +143,9 @@ export const ProfileUpdate = () => {
         <div className="flex justify-start mb-8">
           <div className="relative">
             <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500">
-              {false ? (
+              {previewUrl ? (
                 <img
+                  src={previewUrl}
                   alt="Profile"
                   className="w-full h-full object-cover"
                 />
@@ -127,15 +159,17 @@ export const ProfileUpdate = () => {
             </div>
             <button
               type="button"
-              // onClick={() => fileInputRef.current?.click()}
+              onClick={() => fileInputRef.current?.click()}
               className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full text-white hover:bg-blue-600"
             >
               <FaCamera size={16} />
             </button>
             <input
+              ref={fileInputRef}
               type="file"
               accept="image/*"
               className="hidden"
+              onChange={handleImageChange}
             />
           </div>
         </div>
@@ -265,12 +299,6 @@ export const ProfileUpdate = () => {
           >
             Delete Account
           </button>
-          {/* <button 
-            type="button"
-            className="w-full sm:w-32 border rounded-md py-3 hover:bg-gray-50"
-          >
-            Cancel
-          </button> */}
           <ButtonWithLoading
             type="submit"
             isLoading={isLoading}

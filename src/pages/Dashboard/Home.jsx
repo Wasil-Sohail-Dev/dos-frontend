@@ -109,7 +109,7 @@ export const DashboardHomePage = () => {
 
       {/* Drag and Drop Upload Section */}
       <div
-        className="w-full max-w-[900px] min-h-[400px] border border-dashed border-[#00000040] bg-white flex flex-col items-center justify-center rounded-lg px-4"
+        className="w-full max-w-[900px] min-h-[400px] border-[1.62px] border-dashed border-[#00000040] bg-white flex flex-col items-center justify-center rounded-lg px-4"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
       >

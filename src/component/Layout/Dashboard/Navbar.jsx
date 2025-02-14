@@ -1,11 +1,21 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export const DashboardNavbar = () => {
-  // Fetch user data from Redux store
-  const { firstName, lastName, email } =
-    useSelector((state) => state.auth.user) || {};
+  const navigate = useNavigate();
+  const { firstName, lastName, email } = useSelector((state) => state.auth.user) || {};
   const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate("/chat", { state: { initialMessage: searchQuery.trim() } });
+      setSearchQuery("");
+      setIsSearchVisible(false);
+    }
+  };
 
   return (
     <nav className="bg-[#3A8EF6] relative">
@@ -43,7 +53,7 @@ export const DashboardNavbar = () => {
           </button>
 
           {/* Search Bar - Desktop */}
-          <div className="hidden md:flex items-center bg-white px-4 py-2 rounded-full shadow-md">
+          <form onSubmit={handleSearch} className="hidden md:flex items-center bg-white px-4 py-2 rounded-full shadow-md">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -60,10 +70,12 @@ export const DashboardNavbar = () => {
             </svg>
             <input
               type="text"
-              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Ask anything with AI..."
               className="ml-2 outline-none bg-transparent text-gray-600 w-40 lg:w-60"
             />
-          </div>
+          </form>
 
           {/* Notification Icon */}
           <div className="relative">
@@ -100,7 +112,8 @@ export const DashboardNavbar = () => {
       </div>
 
       {/* Mobile Search Bar */}
-      <div
+      <form
+        onSubmit={handleSearch}
         className={`${
           isSearchVisible ? "block" : "hidden"
         } md:hidden absolute w-full px-4 py-3 bg-[#2D7FE7] shadow-lg`}
@@ -122,11 +135,13 @@ export const DashboardNavbar = () => {
           </svg>
           <input
             type="text"
-            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Ask anything with AI..."
             className="ml-2 outline-none bg-transparent text-gray-600 w-full"
           />
         </div>
-      </div>
+      </form>
     </nav>
   );
 };

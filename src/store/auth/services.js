@@ -386,13 +386,27 @@ export const updateUserDetailsFunApi = createAsyncThunk(
   "auth/updateUserDetails",
   async ({ data, onSuccess }) => {
     try {
-      const response = await axios.post(updateUserDetailsApi, data);
+      const response = await axios.post(updateUserDetailsApi, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       console.log("response in updateUserDetails => ", response.data);
       if (response.data.status === "success") {
         if (onSuccess) {
           onSuccess(response.data.user);
           toast.success(response.data.message);
         }
+        // Update local storage with new user data if needed
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const updatedUser = {
+          ...currentUser,
+          firstName: data.get('firstName'),
+          lastName: data.get('lastName'),
+          email: data.get('email'),
+          profilePicture: response.data.user.profilePicture
+        };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
         return response.data.user;
       } else {
         console.log(

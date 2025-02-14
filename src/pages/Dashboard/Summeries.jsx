@@ -12,6 +12,7 @@ import { getallDocsFunApi, UploadDocumentApi } from "store/document/services";
 import { useLocation } from "react-router";
 import { FaDownload, FaCopy, FaSearch } from "react-icons/fa";
 import Pagination from "component/Layout/Common/Pagination";
+import Loader from "component/Loader";
 
 export const Summaries = () => {
   const location = useLocation();
@@ -134,6 +135,7 @@ export const Summaries = () => {
             dispatch(
               getallDocsFunApi({
                 onSuccess: () => {},
+                isSummaryDocs: true,
               })
             );
           },
@@ -777,9 +779,7 @@ export const Summaries = () => {
         </div>
 
         {docsLoading ? (
-          <div className="flex justify-center items-center p-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-          </div>
+          <Loader />
         ) : allDocs && allDocs.length > 0 ? (
           <>
             <ul className="divide-y divide-gray-200">

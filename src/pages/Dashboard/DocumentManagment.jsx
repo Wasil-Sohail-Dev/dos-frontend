@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteDocsFunApi, getallDocsFunApi } from "store/document/services";
 import { FaEllipsisV, FaFolder, FaTrash, FaSearch } from "react-icons/fa";
 import Pagination from "component/Layout/Common/Pagination";
+import Loader from "component/Loader";
 
 export const DocumentManagement = () => {
   const dispatch = useDispatch();
@@ -95,9 +96,7 @@ export const DocumentManagement = () => {
   return (
     <div className="p-6 min-h-screen bg-white">
       {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-        </div>
+        <Loader />
       ) : (
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-end mb-6">
@@ -137,9 +136,9 @@ export const DocumentManagement = () => {
                   </div>
                 </div>
                 <div className="flex items-center space-x-6">
-                  <span className="text-base text-gray-500">
+                  {/* <span className="text-base text-gray-500">
                     {calculateFolderSize(files)}
-                  </span>
+                  </span> */}
                   <button className="text-gray-400 hover:text-gray-600">
                     <FaEllipsisV size={20} />
                   </button>
