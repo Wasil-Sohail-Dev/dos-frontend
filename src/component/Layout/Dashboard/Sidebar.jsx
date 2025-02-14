@@ -100,7 +100,7 @@ export const SideBarDashboard = () => {
           isOpen ? "translate-x-0" : "-translate-x-full"
         } lg:relative lg:block w-[280px] shadow-xl`}
       >
-        <div className="p-6 text-[#378AF2] text-[36px] font-bold">Logo Here</div>
+        <img src="/logo2.png" alt="Logo Here" className="mx-auto" />
 
         <nav className="h-[calc(100vh-96px)] overflow-y-auto">
           <ul className="space-y-2 px-4">
