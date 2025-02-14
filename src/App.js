@@ -28,11 +28,6 @@ export default function App() {
 
   
   return (
-    <>
-    {
-      loading ? 
-      <Loader />
-      :
     <Routes>
       {/* <Route index element={<Home />} /> */}
       {/* <Route path="about" element={<About />} /> */}
@@ -58,7 +53,5 @@ export default function App() {
         <Route path="profile-update/:id" element={<ProfileUpdate />} />
       </Route>
     </Routes>
-    }
-    </>
   );
 }
