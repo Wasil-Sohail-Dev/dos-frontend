@@ -21,10 +21,10 @@ import AdminUserManagement from "pages/AdminDashboard/AdminUserManagement";
 import Loader from "component/Loader";
 
 export default function App() {
-  const { role,loading } = useSelector((state) => state.auth);
+  // const { role,loading } = useSelector((state) => state.auth);
   
-  const DashboardComponent = role === "patient" ? DashboardHomePage : AdminDashboardHomePage;
-  const DocumentManagmentComponent = role === "patient" ? DocumentManagement : AdminDocumentManagment;
+  const DashboardComponent = true ? DashboardHomePage : AdminDashboardHomePage;
+  const DocumentManagmentComponent = true ? DocumentManagement : AdminDocumentManagment;
 
   
   return (
