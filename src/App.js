@@ -18,15 +18,21 @@ import ChatWithAi from "./pages/Dashboard/ChatWithAi";
 import AdminDashboardHomePage from "pages/AdminDashboard/AdminDashboardHomePage";
 import AdminDocumentManagment from "pages/AdminDashboard/AdminDocumentManagment";
 import AdminUserManagement from "pages/AdminDashboard/AdminUserManagement";
+import Loader from "component/Loader";
 
 export default function App() {
-  const { role } = useSelector((state) => state.auth);
+  const { role,loading } = useSelector((state) => state.auth);
   
   const DashboardComponent = role === "patient" ? DashboardHomePage : AdminDashboardHomePage;
   const DocumentManagmentComponent = role === "patient" ? DocumentManagement : AdminDocumentManagment;
 
   
   return (
+    <>
+    {
+      loading ? 
+      <Loader />
+      :
     <Routes>
       {/* <Route index element={<Home />} /> */}
       {/* <Route path="about" element={<About />} /> */}
@@ -52,5 +58,7 @@ export default function App() {
         <Route path="profile-update/:id" element={<ProfileUpdate />} />
       </Route>
     </Routes>
+    }
+    </>
   );
 }
