@@ -14,9 +14,22 @@ export const styles = `
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
+    const data = payload[0].payload;
     return (
-      <div className="bg-white p-2 border rounded shadow">
-        <p className="text-sm">Value: {payload[0].value}</p>
+      <div className="bg-white p-3 border rounded shadow">
+        <div className="flex items-center gap-2 mb-1">
+          <img 
+            src={data.userImage} 
+            alt={data.displayName}
+            className="w-6 h-6 rounded-full object-cover"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = `https://i.pravatar.cc/30?img=${data.name}`;
+            }}
+          />
+          <p className="text-sm font-medium">{data.displayName}</p>
+        </div>
+        <p className="text-sm text-gray-600">Documents: {payload[0].value}</p>
       </div>
     );
   }
@@ -24,7 +37,10 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 const CustomXAxisTick = ({ x, y, payload, data }) => {
-  const userImage = data[payload.value - 1]?.userImage;
+  const index = payload.value - 1;
+  const userData = data[index];
+  if (!userData) return null;
+  
   return (
     <g transform={`translate(${x},${y})`}>
       <image
@@ -32,9 +48,22 @@ const CustomXAxisTick = ({ x, y, payload, data }) => {
         y="8"
         width="24"
         height="24"
-        xlinkHref={userImage}
+        xlinkHref={userData.userImage}
         clipPath="url(#circleClip)"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.href = `https://i.pravatar.cc/30?img=${userData.name}`;
+        }}
       />
+      <text
+        x="0"
+        y="45"
+        textAnchor="middle"
+        fill="#666"
+        fontSize="12"
+      >
+        {userData.displayName?.split(' ')[0]}
+      </text>
       <defs>
         <clipPath id="circleClip">
           <circle cx="0" cy="20" r="12" />
@@ -58,7 +87,9 @@ const CustomBarTopDot = (props) => {
   );
 };
 
-const GraphSection = ({ data }) => (
+const GraphSection = ({ data, data2 }) => {
+  console.log("graph Dataaaaaa", data);
+  return (
   <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 md:mb-8">
     <div className="p-4 md:p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
@@ -84,7 +115,7 @@ const GraphSection = ({ data }) => (
                   axisLine={false} 
                   tickLine={false}
                   height={50}
-                  tick={(props) => <CustomXAxisTick {...props} data={data} />}
+                  tick={(props) => <CustomXAxisTick {...props} data={data2} />}
                   interval={0}
                   scale="point"
                   padding={{ left: 10, right: 10 }}
@@ -95,7 +126,7 @@ const GraphSection = ({ data }) => (
                   stroke="#9CA3AF"
                   width={40}
                   domain={[0, 'dataMax + 20']}
-                  ticks={[0, 65, 130, 195, 260]}
+                  ticks={[0,15, 25, 30, 45]}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar 
@@ -120,6 +151,6 @@ const GraphSection = ({ data }) => (
       </div>
     </div>
   </div>
-);
+)};
 
 export default GraphSection; 

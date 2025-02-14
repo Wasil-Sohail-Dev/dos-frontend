@@ -1,31 +1,54 @@
-import { useState } from "react";
-import { IoClose } from "react-icons/io5";
+import { useState, useEffect } from "react";
 import DataTable from "component/Layout/Common/DataTable";
 import Modal from "component/Layout/Common/Modal";
-
-const USERS_DATA = [
-  { id: 11232, name: "Munaaza Arshad", email: "xyz@gmail.com", date: "Apr 24, 2022", phone: "99239393409" },
-  { id: 11232, name: "Taha Baig", email: "xyz@gmail.com", date: "Apr 24, 2022", phone: "99239393409" },
-  { id: 11232, name: "Arifa Anwar", email: "xyz@gmail.com", date: "Apr 24, 2022", phone: "99239393409" },
-  { id: 11232, name: "Munaaza Arshad", email: "xyz@gmail.com", date: "Apr 24, 2022", phone: "99239393409" },
-  { id: 11232, name: "Taha Baig", email: "xyz@gmail.com", date: "Apr 24, 2022", phone: "99239393409" },
-  { id: 11232, name: "Arifa Anwar", email: "xyz@gmail.com", date: "Apr 24, 2022", phone: "99239393409" },
-];
+import { useDispatch, useSelector } from "react-redux";
+import { getAllUsersFunApi } from "store/auth/services";
 
 const TABLE_COLUMNS = [
-  { key: 'id', label: 'User ID' },
-  { key: 'name', label: 'User Name', isItalic: true },
-  { key: 'email', label: 'Email Address' },
-  { key: 'date', label: 'Date Created' },
-  { key: 'phone', label: 'Phone Number' },
+  { key: "id", label: "User ID" },
+  { key: "name", label: "User Name", isItalic: true },
+  { key: "email", label: "Email Address" },
+  { key: "date", label: "Date Created" },
+  { key: "phone", label: "Phone Number" },
 ];
 
 const INITIAL_USER = { name: "", email: "" };
 
 export default function AdminUserManagement() {
-  const [enabled, setEnabled] = useState(Array(USERS_DATA.length).fill(true));
+  const dispatch = useDispatch();
+  const { data: allUsers } = useSelector((state) => state.auth.allUsers);
+  const [enabled, setEnabled] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newUser, setNewUser] = useState(INITIAL_USER);
+
+  // Transform users data for table display
+  const transformedUsers =
+    allUsers?.map((user) => ({
+      id: user.id || user._id,
+      name:
+        `${user.firstName} ${user.lastName}`.length > 20
+          ? `${user.firstName} ${user.lastName}`.slice(0, 20) + "..."
+          : `${user.firstName} ${user.lastName}`,
+      email:
+        user.email.length > 20 ? user.email.slice(0, 20) + "..." : user.email,
+      date: new Date(user.createdAt).toLocaleDateString("en-US", {
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+      }),
+      phone: user.phone?.number
+        ? `${user.phone.code}${user.phone.number}`
+        : "N/A",
+    })) || [];
+
+  useEffect(() => {
+    dispatch(getAllUsersFunApi({ onSuccess: () => {} }));
+  }, [dispatch]);
+
+  useEffect(() => {
+    // Initialize enabled states for all users
+    setEnabled(Array(transformedUsers.length).fill(true));
+  }, [transformedUsers.length]);
 
   const handleToggle = (index) => {
     const newEnabled = [...enabled];
@@ -35,12 +58,12 @@ export default function AdminUserManagement() {
 
   const handleDelete = (id) => {
     // Implement delete functionality
-    console.log('Delete user:', id);
+    console.log("Delete user:", id);
   };
 
   const handleEdit = (id) => {
     // Implement edit functionality
-    console.log('Edit user:', id);
+    console.log("Edit user:", id);
   };
 
   const handleAddUser = () => {
@@ -52,7 +75,7 @@ export default function AdminUserManagement() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewUser(prev => ({ ...prev, [name]: value }));
+    setNewUser((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -67,7 +90,7 @@ export default function AdminUserManagement() {
       </div>
 
       <DataTable
-        data={USERS_DATA}
+        data={transformedUsers}
         columns={TABLE_COLUMNS}
         enabledStates={enabled}
         onToggle={handleToggle}

@@ -7,6 +7,8 @@ import {
   registerFunApi,
   verifyOtpFunApi,
   updateUserDetailsFunApi,
+  getAllUsersFunApi,
+  getAllAdminsFunApi,
 } from "./services";
 
 const authSlice = createSlice({
@@ -30,6 +32,12 @@ const authSlice = createSlice({
       isLoading: false,
       error: null,
     },
+    allAdmins: {
+      data: [],
+      isLoading: false,
+      error: null,
+    },
+
     editUser: {
       data: null,
       isLoading: false,
@@ -201,6 +209,40 @@ const authSlice = createSlice({
         state.editUser.isLoading = false;
         state.editUser.dataFatched = false;
         state.editUser.error = action.error.message;
+      });
+
+    builder
+      .addCase(getAllUsersFunApi.pending, (state) => {
+        state.allUsers.isLoading = true;
+        state.allUsers.error = null;
+      })
+      .addCase(getAllUsersFunApi.fulfilled, (state, action) => {
+        state.allUsers.isLoading = false;
+        state.allUsers.data = action.payload; // Update the data here
+        state.allUsers.dataFatched = true;
+        state.allUsers.error = null;
+      })
+      .addCase(getAllUsersFunApi.rejected, (state, action) => {
+        state.allUsers.isLoading = false;
+        state.allUsers.dataFatched = false;
+        state.allUsers.error = action.error.message;
+      });
+
+      builder
+      .addCase(getAllAdminsFunApi.pending, (state) => {
+        state.allAdmins.isLoading = true;
+        state.allAdmins.error = null;
+      })
+      .addCase(getAllAdminsFunApi.fulfilled, (state, action) => {
+        state.allAdmins.isLoading = false;
+        state.allAdmins.data = action.payload; // Update the data here
+        state.allAdmins.dataFatched = true;
+        state.allAdmins.error = null;
+      })
+      .addCase(getAllAdminsFunApi.rejected, (state, action) => {
+        state.allAdmins.isLoading = false;
+        state.allAdmins.dataFatched = false;
+        state.allAdmins.error = action.error.message;
       });
   },
 });

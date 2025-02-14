@@ -113,20 +113,20 @@ export const DocumentOverview = () => {
     }
   };
 
-  const handleDeleteDocument = (docsId) => {
-    console.log("docsId", docsId);
-    setShowMoveModal(false);
-    setSelectedDoc(null);
-    setSelectedCategory("");
-    dispatch(
-      deleteDocsFunApi({
-        data: JSON.stringify({ docsId }),
-        onSuccess: () => {
-          fetchDocuments();
-        },
-      })
-    );
-  };
+  // const handleDeleteDocument = (docsId) => {
+  //   console.log("docsId", docsId);
+  //   setShowMoveModal(false);
+  //   setSelectedDoc(null);
+  //   setSelectedCategory("");
+  //   dispatch(
+  //     deleteDocsFunApi({
+  //       data: JSON.stringify({ docsId }),
+  //       onSuccess: () => {
+  //         fetchDocuments();
+  //       },
+  //     })
+  //   );
+  // };
 
   const handleDownload = async (fileUrl, fileName) => {
     try {
@@ -144,6 +144,24 @@ export const DocumentOverview = () => {
       console.error('Download failed:', error);
     }
   };
+
+  const handleDeleteDocument = (docsId) => {
+    console.log("docsId", docsId)
+    setShowMoveModal(false)
+    setSelectedDoc(null)
+    setSelectedCategory("")
+    dispatch(
+      deleteDocsFunApi({
+        data: { docsId }, 
+        onSuccess: () => {
+          fetchDocuments();
+          console.log("Document deleted successfully!");
+        },
+      })
+    );
+  };
+
+
 
   return (
     <div className="flex flex-col items-center min-h-screen p-4 lg:p-10">

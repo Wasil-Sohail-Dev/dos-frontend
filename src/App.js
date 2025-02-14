@@ -4,7 +4,7 @@ import DashboardLayout from "./component/Layout/Dashboard/Layout";
 import { DocumentManagement } from "pages/Dashboard/DocumentManagment";
 import { DocumentOverview } from "pages/Dashboard/DocumentOverview";
 import { ProfileUpdate } from "pages/Dashboard/ProfileUpdate";
-
+import { useSelector } from "react-redux";
 import { Login } from "component/Layout/AuthLayout/Auth/Login";
 import { AuthLayout } from "component/Layout/AuthLayout/Layout";
 import { Signup } from "component/Layout/AuthLayout/Auth/Signup";
@@ -20,6 +20,12 @@ import AdminDocumentManagment from "pages/AdminDashboard/AdminDocumentManagment"
 import AdminUserManagement from "pages/AdminDashboard/AdminUserManagement";
 
 export default function App() {
+  const { role } = useSelector((state) => state.auth);
+  
+  const DashboardComponent = role === "patient" ? DashboardHomePage : AdminDashboardHomePage;
+  const DocumentManagmentComponent = role === "patient" ? DocumentManagement : AdminDocumentManagment;
+
+  
   return (
     <Routes>
       {/* <Route index element={<Home />} /> */}
@@ -36,16 +42,14 @@ export default function App() {
       </Route>
 
       <Route element={<DashboardLayout />}>
-        <Route index element={<DashboardHomePage />} />
-        {/* <Route index element={<AdminDashboardHomePage />} /> */}
-
+        <Route index element={<DashboardComponent />} />
         <Route path="document-overview" element={<DocumentOverview />} />
-        <Route path="document-managment" element={<DocumentManagement />} />
-        {/* <Route path="document-managment" element={<AdminDocumentManagment />} /> */}
-        <Route path="user-management" element={<AdminUserManagement />} />
+        <Route path="document-managment" element={<DocumentManagmentComponent />} />
+        {role !== "patient" && <Route path="user-management" element={<AdminUserManagement />} />}
         <Route path="profile-update" element={<ProfileUpdate />} />
         <Route path="document-summeries" element={<Summaries />} />
         <Route path="chat" element={<ChatWithAi />} />
+        <Route path="profile-update/:id" element={<ProfileUpdate />} />
       </Route>
     </Routes>
   );

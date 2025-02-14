@@ -11,6 +11,7 @@ import {
   getAllUsersApi,
   getUserDetailsApi,
   updateUserDetailsApi,
+  getalladmins,
 } from "./constrants";
 import toast from "react-hot-toast";
 // import axiosImage from "helper/api-image"
@@ -27,7 +28,7 @@ export const loginFunApi = createAsyncThunk(
         localStorage.setItem("user", JSON.stringify(responseData.user));
 
         if (onSuccess) {
-          onSuccess(responseData.user.email);
+          onSuccess(responseData);
           toast.success(response.data.message);
         }
         return;
@@ -277,7 +278,6 @@ export const logoutFunApi = createAsyncThunk(
       if (response.data.status === "success") {
         // Clear local storage
         localStorage.clear();
-
         if (onSuccess) {
           onSuccess();
         }
@@ -369,6 +369,42 @@ export const getUserDetailsFunApi = createAsyncThunk(
       }
     } catch (error) {
       console.log("Error in getUserDetails Api ", error);
+      let err =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Something went wrong!";
+      if (err === "Network Error") {
+        err = "Please check your internet connection";
+      }
+      toast.error(err);
+      throw new Error(err);
+    }
+  }
+);
+
+export const getAllAdminsFunApi = createAsyncThunk(
+  "auth/getAllAdmins",
+  async ({ onSuccess }) => {
+    try {
+      const response = await axios.get(getalladmins);
+      console.log("response in getAllAdmins => ", response.data);
+      if (response.data.status === "success") {
+        if (onSuccess) {
+          onSuccess(response.data.data.admins);
+        }
+        return response.data.data.admins;
+      } else {
+        console.log("Error response in getAllAdmins Api => ", response.data);
+        const err =
+          response?.data?.message ||
+          response?.message ||
+          "Something went wrong!";
+        console.log("err: ", err);
+        toast.error(err);
+        throw new Error(err);
+      }
+    } catch (error) {
+      console.log("Error in getAllAdmins Api ", error);
       let err =
         error?.response?.data?.message ||
         error?.message ||

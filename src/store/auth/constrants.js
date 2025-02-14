@@ -8,3 +8,4 @@ export const logoutApi = "/auth/logout";
 export const getAllUsersApi = "/auth/get-all-users";
 export const getUserDetailsApi = "/auth/get-user-details";
 export const updateUserDetailsApi = "/auth/update-user-details";
+export const getalladmins = "/auth/get-all-admins-api"

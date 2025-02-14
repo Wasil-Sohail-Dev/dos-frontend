@@ -1,17 +1,12 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { AiFillHome } from "react-icons/ai";
 import { RxDashboard } from "react-icons/rx";
 import { IoIosDocument } from "react-icons/io";
-import { MdSummarize } from "react-icons/md";
 import { MdEditDocument } from "react-icons/md";
 import { FaCommentDots, FaUser } from "react-icons/fa";
 import { HiDocumentSearch } from "react-icons/hi";
-import { IoSettingsSharp } from "react-icons/io5";
 import { TbLogout } from "react-icons/tb";
-import { IoIosHelpCircle } from "react-icons/io";
-import { FaWallet, FaShoppingCart, FaCrown } from "react-icons/fa";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logoutFunApi } from "store/auth/services";
 
 const sidebarList = [
@@ -57,6 +52,7 @@ export const SideBarDashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
+  const { role } = useSelector((state) => state.auth);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -108,7 +104,12 @@ export const SideBarDashboard = () => {
 
         <nav className="h-[calc(100vh-96px)] overflow-y-auto">
           <ul className="space-y-2 px-4">
-            {sidebarList.map((item, index) => {
+            {sidebarList.filter(item => {
+              if(role === "patient"){
+                return item.name !== "User Management"
+              }
+              return item
+            }).map((item, index) => {
               const isActive = location.pathname === item.link;
 
               return (
