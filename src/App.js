@@ -26,7 +26,12 @@ const AdminUserManagement = lazy(() => import("./pages/AdminDashboard/AdminUserM
 
 export default function App() {
   const { role } = useSelector((state) => state.auth);
+  console.log("role", role);
+  
   const isPatient = role === "patient";
+
+  console.log("isPatient", isPatient);
+  
 
   return (
     <Suspense fallback={<Loader />}>
@@ -44,14 +49,16 @@ export default function App() {
         <Route element={<Suspense fallback={<Loader />}><DashboardLayout /></Suspense>}>
           <Route index element={
             <Suspense fallback={<Loader />}>
-              {isPatient ? <DashboardHomePage /> : <AdminDashboardHomePage />}
+              {isPatient && <DashboardHomePage />}
             </Suspense>
           } />
+          {!isPatient && <Route path="admin-dashboard" element={<Suspense fallback={<Loader />}><AdminDashboardHomePage /></Suspense>} />}
           <Route path="document-overview" element={<Suspense fallback={<Loader />}><DocumentOverview /></Suspense>} />
           <Route path="document-managment" element={
             <Suspense fallback={<Loader />}>
               {isPatient ? <DocumentManagement /> : <AdminDocumentManagment />}
             </Suspense>
+
           } />
           {!isPatient && <Route path="user-management" element={<Suspense fallback={<Loader />}><AdminUserManagement /></Suspense>} />}
           <Route path="profile-update" element={<Suspense fallback={<Loader />}><ProfileUpdate /></Suspense>} />
@@ -63,3 +70,4 @@ export default function App() {
     </Suspense>
   );
 }
+

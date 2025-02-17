@@ -35,7 +35,11 @@ export const Login = () => {
             // Update local storage with user data
             localStorage.setItem("token", responseData.token);
             localStorage.setItem("user", JSON.stringify(responseData.user));
-            navigate("/");
+            if (responseData.user.role === "patient") {
+              navigate("/");
+            } else {
+              navigate("/admin-dashboard");
+            }
           },
         })
       );

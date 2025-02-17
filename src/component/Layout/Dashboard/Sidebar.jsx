@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { RxDashboard } from "react-icons/rx";
 import { IoIosDocument } from "react-icons/io";
@@ -9,11 +9,11 @@ import { TbLogout } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutFunApi } from "store/auth/services";
 
-const sidebarList = [
+const sidebar = [
   {
     name: "Dashboard",
     icon: <RxDashboard />,
-    link: "/",
+    link: "/admin-dashboard",
   },
   {
     name: "Document Management",
@@ -53,6 +53,20 @@ export const SideBarDashboard = () => {
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const { role } = useSelector((state) => state.auth);
+  const [sidebarList, setSidebarList] = useState([...sidebar]);
+  useEffect(() => {
+    if(role === "patient"){
+      setSidebarList(prevState => {
+        const updatedSidebar = [...prevState];
+        updatedSidebar[0] = {
+          name: "Dashboard",
+          icon: <RxDashboard />,
+          link: "/",
+        };
+        return updatedSidebar;
+      });
+    }
+  }, [role]);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);

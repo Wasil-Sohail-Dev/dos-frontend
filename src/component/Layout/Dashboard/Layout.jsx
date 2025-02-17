@@ -38,7 +38,11 @@ export const DashboardLayout = () => {
         if (validToken.dataFetched) {
           if (validToken.validToken) {
             if (window.location.pathname.includes("/authentication")) {
-              navigate("/");
+              if (role === "patient") {
+                navigate("/");
+              } else {
+                navigate("/admin-dashboard");
+              }
             }
           } else {
             if (!window.location.pathname.includes("/authentication")) {

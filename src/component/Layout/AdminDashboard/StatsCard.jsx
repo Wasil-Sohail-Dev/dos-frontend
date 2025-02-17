@@ -19,8 +19,6 @@ export const StatsCard = ({ title, value, Icon }) => (
 );
 
 export const StatsGrid = () => {
-  const { role } = useSelector((state) => state.auth);
-  const isPatient = role === "patient";
   const allUsers = useSelector((state) => state.auth.allUsers?.data || []);
   const documentData = useSelector(
     (state) => state.document.documentAll?.data || []
