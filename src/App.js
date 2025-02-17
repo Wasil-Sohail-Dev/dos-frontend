@@ -53,7 +53,7 @@ export default function App() {
               {isPatient ? <DocumentManagement /> : <AdminDocumentManagment />}
             </Suspense>
           } />
-          {!isPatient && <Route path="user-management" element={<Suspense fallback={<Loader />}><AdminUserManagement /></Suspense>} />}
+          {/* {!isPatient && <Route path="user-management" element={<Suspense fallback={<Loader />}><AdminUserManagement /></Suspense>} />} */}
           <Route path="profile-update" element={<Suspense fallback={<Loader />}><ProfileUpdate /></Suspense>} />
           <Route path="document-summeries" element={<Suspense fallback={<Loader />}><Summaries /></Suspense>} />
           <Route path="chat" element={<Suspense fallback={<Loader />}><ChatWithAi /></Suspense>} />
