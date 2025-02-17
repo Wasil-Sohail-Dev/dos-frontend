@@ -7,6 +7,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router";
 import SideModal from "component/Layout/Dashboard/SideModal";
+import { FiUploadCloud } from "react-icons/fi";
 
 export const DashboardHomePage = () => {
   const navigate = useNavigate();
@@ -115,35 +116,10 @@ export const DashboardHomePage = () => {
       >
         <div className="flex flex-col items-center text-center">
           <div className="mb-6">
-            <svg
-              width="40"
-              height="40"
-              viewBox="0 0 40 40"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M26.667 26.6667L20.0003 20L13.3337 26.6667"
-                stroke="#4285F4"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M20 20V35"
-                stroke="#4285F4"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M33.9663 30.6333C35.5522 29.7534 36.8068 28.3842 37.5674 26.7152C38.328 25.0463 38.5539 23.1646 38.2152 21.3452C37.8765 19.5259 36.9898 17.8658 35.6824 16.5584C34.375 15.251 32.7149 14.3643 30.8956 14.0256V14.0256C30.1366 12.0162 28.8787 10.2243 27.2374 8.81772C25.5962 7.41111 23.6215 6.42984 21.5031 5.95705C19.3847 5.48427 17.1873 5.53386 15.0924 6.10123C12.9976 6.66861 11.0701 7.73849 9.49746 9.21715C7.92478 10.6958 6.75095 12.5425 6.08607 14.5917C5.42119 16.6409 5.28771 18.8239 5.69844 20.9399C6.10917 23.056 7.05183 25.0423 8.44147 26.7132C9.83111 28.3841 11.6235 29.6861 13.6663 30.5"
-                stroke="#4285F4"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <FiUploadCloud
+              size={40}
+              className="text-[#4285F4]"
+            />
           </div>
           <h3 className="text-[#111827] text-lg lg:text-[28px] font-medium lg:leading-[40.54px] mb-2">
             Select a file or drag and drop here

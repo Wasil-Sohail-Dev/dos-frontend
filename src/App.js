@@ -1,72 +1,58 @@
 import { Route, Routes } from "react-router";
-import { Suspense, lazy } from "react";
+import { Suspense } from "react";
 import { useSelector } from "react-redux";
 import Loader from "./component/Loader";
+import { AuthComponents, DashboardPages, AdminPages, Layouts, withRoleAccess } from "./helper/pages-routes";
 
+const ProtectedAdminUserManagement = withRoleAccess(AdminPages.AdminUserManagement, ['super-admin']);
+const ProtectedAdminDashboard = withRoleAccess(AdminPages.AdminDashboardHomePage, ['super-admin']);
+const ProtectedAdminDocumentManagement = withRoleAccess(AdminPages.AdminDocumentManagment, ['super-admin']);
 
-// Lazy load all components
-const DashboardHomePage = lazy(() => import("./pages/Dashboard/Home").then(module => ({ default: module.DashboardHomePage })));
-const AdminDashboardHomePage = lazy(() => import("./pages/AdminDashboard/AdminDashboardHomePage"));
-const DashboardLayout = lazy(() => import("./component/Layout/Dashboard/Layout"));
-const DocumentManagement = lazy(() => import("./pages/Dashboard/DocumentManagment").then(module => ({ default: module.DocumentManagement })));
-const AdminDocumentManagment = lazy(() => import("./pages/AdminDashboard/AdminDocumentManagment"));
-const DocumentOverview = lazy(() => import("./pages/Dashboard/DocumentOverview").then(module => ({ default: module.DocumentOverview })));
-const ProfileUpdate = lazy(() => import("./pages/Dashboard/ProfileUpdate").then(module => ({ default: module.ProfileUpdate })));
-const Login = lazy(() => import("./component/Layout/AuthLayout/Auth/Login").then(module => ({ default: module.Login })));
-const AuthLayout = lazy(() => import("./component/Layout/AuthLayout/Layout").then(module => ({ default: module.AuthLayout })));
-const Signup = lazy(() => import("./component/Layout/AuthLayout/Auth/Signup").then(module => ({ default: module.Signup })));
-const HealthProvider = lazy(() => import("./component/Layout/AuthLayout/Auth/healthProvider").then(module => ({ default: module.HealthProvider })));
-const ForgetPassword = lazy(() => import("./component/Layout/AuthLayout/Auth/forgetPassword").then(module => ({ default: module.ForgetPassword })));
-const PasswordSuccess = lazy(() => import("./component/Layout/AuthLayout/Auth/passwordSucess").then(module => ({ default: module.PasswordSuccess })));
-const ResetPassword = lazy(() => import("./component/Layout/AuthLayout/Auth/resetPassword").then(module => ({ default: module.ResetPassword })));
-const OtpForm = lazy(() => import("./component/Layout/AuthLayout/Auth/Otp").then(module => ({ default: module.OtpForm })));
-const Summaries = lazy(() => import("./pages/Dashboard/Summeries").then(module => ({ default: module.Summaries })));
-const ChatWithAi = lazy(() => import("./pages/Dashboard/ChatWithAi"));
-const AdminUserManagement = lazy(() => import("./pages/AdminDashboard/AdminUserManagement"));
+const ProtectedDashboardHome = withRoleAccess(DashboardPages.DashboardHomePage, ['patient']);
+const ProtectedDocumentManagement = withRoleAccess(DashboardPages.DocumentManagement, ['patient']);
+
+const SuspenseWrapper = ({ children }) => (
+  <Suspense fallback={<Loader />}>
+    {children}
+  </Suspense>
+);
 
 export default function App() {
-  const { role } = useSelector((state) => state.auth);
-  console.log("role", role);
-  
+  const { role } = useSelector(state => state.auth);
   const isPatient = role === "patient";
 
-  console.log("isPatient", isPatient);
-  
-
   return (
-    <Suspense fallback={<Loader />}>
+    <SuspenseWrapper>
       <Routes>
-        <Route element={<Suspense fallback={<Loader />}><AuthLayout /></Suspense>}>
-          <Route path="login" element={<Suspense fallback={<Loader />}><Login /></Suspense>} />
-          <Route path="signup" element={<Suspense fallback={<Loader />}><Signup /></Suspense>} />
-          <Route path="health-provider" element={<Suspense fallback={<Loader />}><HealthProvider /></Suspense>} />
-          <Route path="enter-otp" element={<Suspense fallback={<Loader />}><OtpForm /></Suspense>} />
-          <Route path="forget-password" element={<Suspense fallback={<Loader />}><ForgetPassword /></Suspense>} />
-          <Route path="reset-password" element={<Suspense fallback={<Loader />}><ResetPassword /></Suspense>} />
-          <Route path="password-success" element={<Suspense fallback={<Loader />}><PasswordSuccess /></Suspense>} />
+        <Route element={<SuspenseWrapper><Layouts.AuthLayout /></SuspenseWrapper>}>
+          <Route path="login" element={<SuspenseWrapper><AuthComponents.Login /></SuspenseWrapper>} />
+          <Route path="signup" element={<SuspenseWrapper><AuthComponents.Signup /></SuspenseWrapper>} />
+          <Route path="health-provider" element={<SuspenseWrapper><AuthComponents.HealthProvider /></SuspenseWrapper>} />
+          <Route path="enter-otp" element={<SuspenseWrapper><AuthComponents.OtpForm /></SuspenseWrapper>} />
+          <Route path="forget-password" element={<SuspenseWrapper><AuthComponents.ForgetPassword /></SuspenseWrapper>} />
+          <Route path="reset-password" element={<SuspenseWrapper><AuthComponents.ResetPassword /></SuspenseWrapper>} />
+          <Route path="password-success" element={<SuspenseWrapper><AuthComponents.PasswordSuccess /></SuspenseWrapper>} />
         </Route>
 
-        <Route element={<Suspense fallback={<Loader />}><DashboardLayout /></Suspense>}>
+        <Route element={<SuspenseWrapper><Layouts.DashboardLayout /></SuspenseWrapper>}>
           <Route index element={
-            <Suspense fallback={<Loader />}>
-              {isPatient && <DashboardHomePage />}
-            </Suspense>
+            <SuspenseWrapper>
+              {isPatient ? <ProtectedDashboardHome /> : <ProtectedAdminDashboard />}
+            </SuspenseWrapper>
           } />
-          {!isPatient && <Route path="admin-dashboard" element={<Suspense fallback={<Loader />}><AdminDashboardHomePage /></Suspense>} />}
-          <Route path="document-overview" element={<Suspense fallback={<Loader />}><DocumentOverview /></Suspense>} />
+          <Route path="document-overview" element={<SuspenseWrapper><DashboardPages.DocumentOverview /></SuspenseWrapper>} />
           <Route path="document-managment" element={
-            <Suspense fallback={<Loader />}>
-              {isPatient ? <DocumentManagement /> : <AdminDocumentManagment />}
-            </Suspense>
-
+            <SuspenseWrapper>
+              {isPatient ? <ProtectedDocumentManagement /> : <ProtectedAdminDocumentManagement />}
+            </SuspenseWrapper>
           } />
-          {!isPatient && <Route path="user-management" element={<Suspense fallback={<Loader />}><AdminUserManagement /></Suspense>} />}
-          <Route path="profile-update" element={<Suspense fallback={<Loader />}><ProfileUpdate /></Suspense>} />
-          <Route path="document-summeries" element={<Suspense fallback={<Loader />}><Summaries /></Suspense>} />
-          <Route path="chat" element={<Suspense fallback={<Loader />}><ChatWithAi /></Suspense>} />
-          <Route path="profile-update/:id" element={<Suspense fallback={<Loader />}><ProfileUpdate /></Suspense>} />
+          <Route path="user-management" element={<SuspenseWrapper><ProtectedAdminUserManagement /></SuspenseWrapper>} />
+          <Route path="profile-update" element={<SuspenseWrapper><DashboardPages.ProfileUpdate /></SuspenseWrapper>} />
+          <Route path="document-summeries" element={<SuspenseWrapper><DashboardPages.Summaries /></SuspenseWrapper>} />
+          <Route path="chat" element={<SuspenseWrapper><DashboardPages.ChatWithAi /></SuspenseWrapper>} />
+          <Route path="profile-update/:id" element={<SuspenseWrapper><DashboardPages.ProfileUpdate /></SuspenseWrapper>} />
         </Route>
       </Routes>
-    </Suspense>
+    </SuspenseWrapper>
   );
 }

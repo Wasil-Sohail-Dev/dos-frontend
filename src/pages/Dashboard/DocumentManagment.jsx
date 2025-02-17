@@ -59,28 +59,10 @@ export const DocumentManagement = () => {
       })
     );
   };
-
-  const calculateFolderSize = (files) => {
-    const totalBytes = files.reduce((acc, file) => {
-      return acc + (file.size || 0);
-    }, 0);
-
-    if (totalBytes >= 1024 * 1024 * 1024) {
-      return (totalBytes / (1024 * 1024 * 1024)).toFixed(2) + "GB";
-    } else if (totalBytes >= 1024 * 1024) {
-      return (totalBytes / (1024 * 1024)).toFixed(2) + "MB";
-    } else if (totalBytes >= 1024) {
-      return (totalBytes / 1024).toFixed(0) + "KB";
-    }
-    return totalBytes + "B";
-  };
-
-  // Filter categories based on search
   const filteredCategories = Object.entries(groupedDocs).filter(([category]) =>
     category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Calculate pagination
   const indexOfLastCategory = currentPage * categoriesPerPage;
   const indexOfFirstCategory = indexOfLastCategory - categoriesPerPage;
   const currentCategories = filteredCategories.slice(
@@ -107,7 +89,7 @@ export const DocumentManagement = () => {
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
-                  setCurrentPage(1); // Reset to first page on search
+                  setCurrentPage(1);
                 }}
                 className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
               />

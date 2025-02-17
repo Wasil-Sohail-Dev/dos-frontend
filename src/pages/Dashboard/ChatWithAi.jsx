@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { FaArrowUpLong } from "react-icons/fa6";
-import { IoIosAttach } from "react-icons/io";
 import { sendMessage } from "../../store/chat/services";
 import PreviewChart from "../../component/Layout/Dashboard/PreviewChart";
 
@@ -44,12 +43,10 @@ const ChatWithAi = () => {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  // Handle initial message from navbar search
   useEffect(() => {
     const initialMessage = location.state?.initialMessage;
     if (initialMessage) {
       handleSubmit(null, initialMessage);
-      // Clear the location state to prevent re-sending on component remount
       window.history.replaceState({}, document.title);
     }
   }, []);

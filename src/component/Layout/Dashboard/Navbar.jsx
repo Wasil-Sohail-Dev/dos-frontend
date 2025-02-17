@@ -50,9 +50,7 @@ export const DashboardNavbar = () => {
 
   return (
     <nav className="bg-[#3A8EF6] relative">
-      {/* Main Navbar Content */}
       <div className="h-16 md:h-[96px] flex items-center justify-between px-4 md:px-6">
-        {/* Greeting Section - with left padding for mobile menu button */}
         <div className="flex-shrink-0 pl-12 lg:pl-0">
           <h3 className="text-white text-lg md:text-2xl font-bold truncate break-words w-40 md:w-full">
             Hi, {user?.firstName ? `${user.firstName} ${user.lastName}` : "Guest"}
@@ -60,9 +58,7 @@ export const DashboardNavbar = () => {
           <p className="text-white/80 text-xs md:text-sm">Welcome back!</p>
         </div>
 
-        {/* Right Section */}
         <div className="flex items-center gap-2 md:gap-6">
-          {/* Search Toggle for Mobile */}
           <button
             className="md:hidden w-10 h-10 bg-white/10 rounded-full flex items-center justify-center"
             onClick={() => setIsSearchVisible(!isSearchVisible)}
@@ -83,7 +79,6 @@ export const DashboardNavbar = () => {
             </svg>
           </button>
 
-          {/* Search Bar - Desktop */}
           <form onSubmit={handleSearch} className="hidden md:flex items-center bg-white px-4 py-2 rounded-full shadow-md">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -108,7 +103,6 @@ export const DashboardNavbar = () => {
             />
           </form>
 
-          {/* Notification Icon */}
           <div className="relative">
             <div className="w-10 h-10 bg-white/10 md:bg-white rounded-full flex items-center justify-center">
               <svg
@@ -131,7 +125,6 @@ export const DashboardNavbar = () => {
             </span>
           </div>
 
-          {/* Profile Picture */}
           <div className="w-10 h-10 rounded-full border-2 border-yellow-400 overflow-hidden">
             {user?.profilePicture ? (
               <img
@@ -150,7 +143,6 @@ export const DashboardNavbar = () => {
         </div>
       </div>
 
-      {/* Mobile Search Bar */}
       <form
         onSubmit={handleSearch}
         className={`${

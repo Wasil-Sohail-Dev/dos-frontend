@@ -32,14 +32,9 @@ export const Login = () => {
         loginFunApi({
           data: values,
           onSuccess: (responseData) => {
-            // Update local storage with user data
             localStorage.setItem("token", responseData.token);
             localStorage.setItem("user", JSON.stringify(responseData.user));
-            if (responseData.user.role === "patient") {
-              navigate("/");
-            } else {
-              navigate("/admin-dashboard");
-            }
+            navigate("/");
           },
         })
       );

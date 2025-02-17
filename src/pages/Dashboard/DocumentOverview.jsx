@@ -42,12 +42,10 @@ export const DocumentOverview = () => {
     fetchDocuments();
   }, [dispatch]);
 
-  // Extract unique categories for the dropdown
   const uniqueCategories = [
     ...new Set(allDocs?.map((doc) => doc.category) || []),
   ];
 
-  // Filter documents based on search (filename or category)
   const filteredDocs =
     allDocs?.filter((doc) => {
       const fileName = getFileName(doc.fileUrl).toLowerCase();
@@ -56,7 +54,6 @@ export const DocumentOverview = () => {
       return fileName.includes(searchLower) || category.includes(searchLower);
     }) || [];
 
-  // Calculate pagination
   const indexOfLastDoc = currentPage * docsPerPage;
   const indexOfFirstDoc = indexOfLastDoc - docsPerPage;
   const currentDocs = filteredDocs.slice(indexOfFirstDoc, indexOfLastDoc);
@@ -75,7 +72,6 @@ export const DocumentOverview = () => {
   const handleMove = () => {
     if (!selectedDoc || !selectedCategory) return;
 
-    // Find the category details from allDocs
     const targetCategory = allDocs.find(
       (doc) => doc.category === selectedCategory
     );
@@ -113,21 +109,6 @@ export const DocumentOverview = () => {
     }
   };
 
-  // const handleDeleteDocument = (docsId) => {
-  //   console.log("docsId", docsId);
-  //   setShowMoveModal(false);
-  //   setSelectedDoc(null);
-  //   setSelectedCategory("");
-  //   dispatch(
-  //     deleteDocsFunApi({
-  //       data: JSON.stringify({ docsId }),
-  //       onSuccess: () => {
-  //         fetchDocuments();
-  //       },
-  //     })
-  //   );
-  // };
-
   const handleDownload = async (fileUrl, fileName) => {
     try {
       const response = await fetch(fileUrl);
@@ -160,8 +141,6 @@ export const DocumentOverview = () => {
       })
     );
   };
-
-
 
   return (
     <div className="flex flex-col items-center min-h-screen p-4 lg:p-10">
