@@ -310,15 +310,15 @@ export const logoutFunApi = createAsyncThunk(
 
 export const getAllUsersFunApi = createAsyncThunk(
   "auth/getAllUsers",
-  async ({ onSuccess }) => {
+  async ({ page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc', allUsers = false, onSuccess }) => {
     try {
-      const response = await axios.get(getAllUsersApi);
+      const response = await axios.get(`${getAllUsersApi}?page=${page}&limit=${limit}&sortBy=${sortBy}&sortOrder=${sortOrder}&allUsers=${allUsers}`);
       console.log("response in getAllUsers => ", response.data);
       if (response.data.status === "success") {
         if (onSuccess) {
-          onSuccess(response.data.data.users);
+          onSuccess(response.data.data);
         }
-        return response.data.data.users;
+        return response.data.data;
       } else {
         console.log("Error response in getAllUsers Api => ", response.data);
         const err =

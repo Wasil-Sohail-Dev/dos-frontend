@@ -2,18 +2,18 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const UsersTable = ({ users }) => {
-  console.log("users", users)
   const navigate = useNavigate();
+  // Take only the first 4 users
+  const topUsers = users.slice(0, 4);
 
   const handleNavigate = (id) => {
-    console.log("id is ", id);
     navigate(`/profile-update/${id}`);
   };
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100">
       <div className="p-4 md:p-6">
-        <h2 className="text-base md:trt`  ext-xl font-semibold mb-4">
+        <h2 className="text-base md:text-xl font-semibold mb-4">
           Recent Users
         </h2>
       </div>
@@ -42,7 +42,7 @@ const UsersTable = ({ users }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {users.map((user, index) => (
+            {topUsers.map((user, index) => (
               <tr key={index}>
                 <td className="px-4 md:px-6 py-3 text-xs md:text-sm text-[#292929]">
                   {user.id}

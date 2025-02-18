@@ -28,7 +28,7 @@ const authSlice = createSlice({
       dataFetched: false,
     },
     allUsers: {
-      data: [],
+      data: null,
       isLoading: false,
       error: null,
     },
@@ -218,13 +218,11 @@ const authSlice = createSlice({
       })
       .addCase(getAllUsersFunApi.fulfilled, (state, action) => {
         state.allUsers.isLoading = false;
-        state.allUsers.data = action.payload; // Update the data here
-        state.allUsers.dataFatched = true;
+        state.allUsers.data = action.payload;
         state.allUsers.error = null;
       })
       .addCase(getAllUsersFunApi.rejected, (state, action) => {
         state.allUsers.isLoading = false;
-        state.allUsers.dataFatched = false;
         state.allUsers.error = action.error.message;
       });
 

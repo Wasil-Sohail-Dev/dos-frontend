@@ -18,19 +18,17 @@ export const StatsCard = ({ title, value, Icon }) => (
   </div>
 );
 
-export const StatsGrid = () => {
-  const allUsers = useSelector((state) => state.auth.allUsers?.data || []);
+export const StatsGrid = ({ usersData }) => {
+  console.log("usersData", usersData);
   const documentData = useSelector(
     (state) => state.document.documentAll?.data || []
   );
   const adminsData = useSelector(
     (state) => state.auth.allAdmins?.data || []
   );
-  console.log("adminsData", adminsData);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllUsersFunApi({ onSuccess: () => {} }));
     dispatch(getallDocsFunApi({ onSuccess: () => {} }));
     dispatch(getAllAdminsFunApi({ onSuccess: () => {} }));
   }, [dispatch]);
@@ -43,7 +41,7 @@ export const StatsGrid = () => {
       value: `${documentData.length}+`,
       Icon: FaFileAlt,
     },
-    { title: "New Users", value: `${allUsers.length}+`, Icon: FaUsers },
+    { title: "New Users", value: `${usersData||0}+`, Icon: FaUsers },
   ];
 
   return (

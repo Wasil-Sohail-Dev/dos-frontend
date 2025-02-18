@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardHeader from "component/Layout/AdminDashboard/DashboardHeader";
 import { StatsGrid } from "component/Layout/AdminDashboard/StatsCard";
 import GraphSection, {
@@ -9,51 +9,49 @@ import { getAllUsersFunApi } from "store/auth/services";
 import { useDispatch, useSelector } from "react-redux";
 import { getallDocsFunApi } from "store/document/services";
 
-// Main Component
+const USERS_PER_PAGE = 10;
+
 const AdminDashboardHomePage = () => {
   const dispatch = useDispatch();
-  const { data: allUsers } = useSelector((state) => state.auth.allUsers);
+  const { data: usersData } = useSelector((state) => state.auth.allUsers);
   const { data: documentData } = useSelector(
     (state) => state.document.documentAll
   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('desc');
 
   const transformUserDocumentData = (users, documents) => {
     const userDocumentCount = documents.reduce((acc, doc) => {
       acc[doc.userId] = (acc[doc.userId] || 0) + 1;
       return acc;
     }, {});
-    console.log("userDocument 23", userDocumentCount);
 
-    return users.map((user, index) => ({
-      name: index + 1,  // Use index for X-axis positioning
-      displayName: `${user.firstName} ${user.lastName}`,  // For display purposes
+    return users?.map((user, index) => ({
+      name: index + 1,  
+      displayName: `${user.firstName} ${user.lastName}`,  
       value: userDocumentCount[user.id] || 0,
       userImage: user.profilePicture || `https://i.pravatar.cc/30?img=${index + 1}`,
-    }));
+    })) || [];
   };
-
-  // Transform data for graph
-  const graphData = transformUserDocumentData(allUsers, documentData);
 
   const transformUserDocumentData2 = (users, documents) => {
     const userDocumentCount = documents.reduce((acc, doc) => {
       acc[doc.userId] = (acc[doc.userId] || 0) + 1;
       return acc;
     }, {});
-    console.log("userDocument 23", userDocumentCount);
 
-    return users.map((user, index) => ({
-      name: index + 1,  // Use index for X-axis positioning
+    return users?.map((user, index) => ({
+      name: index + 1,  
       value: userDocumentCount[user.id] || 0,
       userImage: user.profilePicture || `https://i.pravatar.cc/30?img=${index + 1}`,
-    }));
+    })) || [];
   };
 
-  // Transform data for graph
-  const graphData2 = transformUserDocumentData2(allUsers, documentData);
+  const graphData = transformUserDocumentData(usersData?.users, documentData);
+  const graphData2 = transformUserDocumentData2(usersData?.users, documentData);
 
-  // Transform data for table (keeping existing format)
-  const transformedUsers = allUsers.map((user, index) => ({
+  const transformedUsers = usersData?.users?.map((user, index) => ({
     userId: user?.id,
     id: `#${10000 + index + 1}`,
     name: `${user.firstName} ${user.lastName}`,
@@ -65,22 +63,36 @@ const AdminDashboardHomePage = () => {
     }),
     phone: user.phone?.number || "N/A",
     userImage: user.profilePicture || `https://i.pravatar.cc/30?img=${index + 1}`,
-    value:
-      graphData.find(
-        (data) => data.name === `${user.firstName} ${user.lastName}`
-      )?.value || 0,
-  }));
+    value: graphData.find(
+      (data) => data.name === index + 1
+    )?.value || 0,
+  })) || [];
 
   useEffect(() => {
-    dispatch(getAllUsersFunApi({ onSuccess: () => {} }));
+    fetchUsers();
     dispatch(getallDocsFunApi({ onSuccess: () => {} }));
-  }, [dispatch]);
+  }, [currentPage, sortBy, sortOrder]);
+
+  const fetchUsers = () => {
+    dispatch(
+      getAllUsersFunApi({
+        page: currentPage,
+        limit: USERS_PER_PAGE,
+        allUsers: true,
+        sortBy,
+        sortOrder,
+        onSuccess: () => {}
+      })
+    );
+  };
+
+  console.log("transformedUsers", usersData);
 
   return (
     <div className="p-4 md:p-6 bg-white min-h-screen">
       <style>{styles}</style>
       <DashboardHeader />
-      <StatsGrid />
+      <StatsGrid usersData={usersData?.total} />
       <GraphSection data={graphData} data2={graphData2} />
       <UsersTable users={transformedUsers} />
     </div>

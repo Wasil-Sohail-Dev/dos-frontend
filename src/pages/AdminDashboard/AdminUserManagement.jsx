@@ -3,6 +3,8 @@ import DataTable from "component/Layout/Common/DataTable";
 import Modal from "component/Layout/Common/Modal";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllUsersFunApi } from "store/auth/services";
+import Pagination from "component/Layout/Common/Pagination";
+import Loader from "component/Loader";
 
 const TABLE_COLUMNS = [
   { key: "id", label: "User ID" },
@@ -13,17 +15,21 @@ const TABLE_COLUMNS = [
 ];
 
 const INITIAL_USER = { name: "", email: "" };
+const USERS_PER_PAGE = 10;
 
 export default function AdminUserManagement() {
   const dispatch = useDispatch();
-  const { data: allUsers } = useSelector((state) => state.auth.allUsers);
+  const { data: usersData, isLoading } = useSelector((state) => state.auth.allUsers);
   const [enabled, setEnabled] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newUser, setNewUser] = useState(INITIAL_USER);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('desc');
 
   // Transform users data for table display
   const transformedUsers =
-    allUsers?.map((user) => ({
+    usersData?.users?.map((user) => ({
       id: user.id || user._id,
       name:
         `${user.firstName} ${user.lastName}`.length > 20
@@ -42,8 +48,20 @@ export default function AdminUserManagement() {
     })) || [];
 
   useEffect(() => {
-    dispatch(getAllUsersFunApi({ onSuccess: () => {} }));
-  }, [dispatch]);
+    fetchUsers();
+  }, [currentPage, sortBy, sortOrder]);
+
+  const fetchUsers = () => {
+    dispatch(
+      getAllUsersFunApi({
+        page: currentPage,
+        limit: USERS_PER_PAGE,
+        sortBy,
+        sortOrder,
+        onSuccess: () => {}
+      })
+    );
+  };
 
   useEffect(() => {
     // Initialize enabled states for all users
@@ -78,6 +96,10 @@ export default function AdminUserManagement() {
     setNewUser((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   return (
     <div className="mx-auto p-6 rounded-lg">
       <div className="flex justify-end">
@@ -89,14 +111,31 @@ export default function AdminUserManagement() {
         </button>
       </div>
 
-      <DataTable
-        data={transformedUsers}
-        columns={TABLE_COLUMNS}
-        enabledStates={enabled}
-        onToggle={handleToggle}
-        onDelete={handleDelete}
-        onEdit={handleEdit}
-      />
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <DataTable
+            data={transformedUsers}
+            columns={TABLE_COLUMNS}
+            enabledStates={enabled}
+            onToggle={handleToggle}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+          />
+
+          {usersData?.pagination && (
+            <div className="p-4">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={usersData.pagination.totalPages}
+                onPageChange={handlePageChange}
+                totalResults={usersData.pagination.totalUsers}
+              />
+            </div>
+          )}
+        </>
+      )}
 
       <Modal
         isOpen={showModal}
