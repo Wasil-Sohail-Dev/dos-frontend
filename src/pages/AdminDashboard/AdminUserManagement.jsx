@@ -19,15 +19,16 @@ const USERS_PER_PAGE = 10;
 
 export default function AdminUserManagement() {
   const dispatch = useDispatch();
-  const { data: usersData, isLoading } = useSelector((state) => state.auth.allUsers);
+  const { data: usersData, isLoading } = useSelector(
+    (state) => state.auth.allUsers
+  );
   const [enabled, setEnabled] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newUser, setNewUser] = useState(INITIAL_USER);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState('createdAt');
-  const [sortOrder, setSortOrder] = useState('desc');
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState("desc");
 
-  // Transform users data for table display
   const transformedUsers =
     usersData?.users?.map((user) => ({
       id: user.id || user._id,
@@ -58,13 +59,13 @@ export default function AdminUserManagement() {
         limit: USERS_PER_PAGE,
         sortBy,
         sortOrder,
-        onSuccess: () => {}
+        role: "patient",
+        onSuccess: () => {},
       })
     );
   };
 
   useEffect(() => {
-    // Initialize enabled states for all users
     setEnabled(Array(transformedUsers.length).fill(true));
   }, [transformedUsers.length]);
 
@@ -75,17 +76,14 @@ export default function AdminUserManagement() {
   };
 
   const handleDelete = (id) => {
-    // Implement delete functionality
     console.log("Delete user:", id);
   };
 
   const handleEdit = (id) => {
-    // Implement edit functionality
     console.log("Edit user:", id);
   };
 
   const handleAddUser = () => {
-    // Logic to add the new user
     console.log("New User:", newUser);
     setShowModal(false);
     setNewUser(INITIAL_USER);
@@ -101,16 +99,7 @@ export default function AdminUserManagement() {
   };
 
   return (
-    <div className="mx-auto p-6 rounded-lg">
-      <div className="flex justify-end">
-        <button
-          className="bg-[#527ED6] text-white px-6 py-3 rounded-md my-10 font-semibold text-xl"
-          onClick={() => setShowModal(true)}
-        >
-          Add New User
-        </button>
-      </div>
-
+    <div className="mx-auto p-6 rounded-lg mt-10">
       {isLoading ? (
         <Loader />
       ) : (

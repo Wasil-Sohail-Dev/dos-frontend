@@ -54,19 +54,19 @@ export default function DataTable({
                   />
                 </button>
               </td>
-              <td className="p-3 flex space-x-3 ml-10">
+              <td className="p-3 flex space-x-3 ml-7">
                 <button
                   className="text-gray-500 hover:text-red-500"
                   onClick={() => onDelete(item.id)}
                 >
                   <FiTrash2 />
                 </button>
-                <button
+                {/* <button
                   className="text-gray-500 hover:text-blue-500"
                   onClick={() => onEdit(item.id)}
                 >
                   <FiEdit2 />
-                </button>
+                </button> */}
               </td>
             </tr>
           ))}
