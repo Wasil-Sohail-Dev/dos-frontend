@@ -86,7 +86,9 @@ export const Summaries = () => {
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const validationSchema = Yup.object({
@@ -175,10 +177,17 @@ export const Summaries = () => {
     setIsRecording(false);
 
     const medicalPrefixes = [
-      "patient-audio", "medical-record", "health-note", "clinical-audio",
-      "diagnosis-record", "consultation", "medical-note", "health-record"
+      "patient-audio",
+      "medical-record",
+      "health-note",
+      "clinical-audio",
+      "diagnosis-record",
+      "consultation",
+      "medical-note",
+      "health-record",
     ];
-    const randomPrefix = medicalPrefixes[Math.floor(Math.random() * medicalPrefixes.length)];
+    const randomPrefix =
+      medicalPrefixes[Math.floor(Math.random() * medicalPrefixes.length)];
     const timestamp = new Date().getTime();
     const filename = `${randomPrefix}-${timestamp}.wav`;
 
@@ -212,13 +221,17 @@ export const Summaries = () => {
   const renderIcon = (fileUrl) => {
     const extension = fileUrl.split(".").pop().toLowerCase();
     switch (extension) {
-      case "pdf": return "📄";
+      case "pdf":
+        return "📄";
       case "wav":
-      case "mp3": return "🎵";
+      case "mp3":
+        return "🎵";
       case "jpg":
       case "jpeg":
-      case "png": return "🖼️";
-      default: return "📁";
+      case "png":
+        return "🖼️";
+      default:
+        return "📁";
     }
   };
 

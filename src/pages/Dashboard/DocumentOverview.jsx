@@ -110,16 +110,20 @@ export const DocumentOverview = () => {
   };
 
   const handleDownload = async (fileUrl, fileName) => {
+    console.log("fileUrl", fileUrl,fileName);
     try {
       const response = await fetch(fileUrl);
+      console.log("responsesadfsdfsdf", response);
+      
+      if (!response.ok) throw new Error('Network response was not ok');
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Download failed:', error);
@@ -211,9 +215,9 @@ export const DocumentOverview = () => {
                     >
                       <MdFolder className="mr-2" /> Move into Folder
                     </button>
-                    <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    {/* <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                       <MdEdit className="mr-2" /> Edit Label
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               </div>
