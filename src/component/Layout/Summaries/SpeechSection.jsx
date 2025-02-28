@@ -1,8 +1,8 @@
-import React from 'react';
-import { FaDownload, FaCopy } from 'react-icons/fa';
-import ButtonWithLoading from 'component/LoadingButton';
-import AudioRecorder from 'component/Layout/Dashboard/AudioRecorder';
-import AudioWaveform from 'component/Layout/Dashboard/AudioWaveform';
+import React from "react";
+import { FaDownload, FaCopy } from "react-icons/fa";
+import ButtonWithLoading from "component/LoadingButton";
+import AudioRecorder from "component/Layout/Dashboard/AudioRecorder";
+import AudioWaveform from "component/Layout/Dashboard/AudioWaveform";
 
 const SpeechSection = ({
   isRecording,
@@ -13,6 +13,7 @@ const SpeechSection = ({
   onRecordingComplete,
   audioUrl,
   summary,
+  text,
   handleCopy,
   showCopyTooltip,
   handleCancel,
@@ -20,8 +21,12 @@ const SpeechSection = ({
   handleUpload,
   isLoading,
   audioFile,
-  formatTime
+  formatTime,
 }) => {
+  console.log("text", text);
+
+  console.log("summary in speech section", summary);
+  console.log("runnin");
   return (
     <div className="flex flex-col items-center py-10">
       <div className="w-11/12 md:w-3/4 bg-white shadow-lg rounded-lg p-6">
@@ -30,7 +35,9 @@ const SpeechSection = ({
             {isRecording && (
               <div className="flex items-center">
                 <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse mr-2"></div>
-                <span className="text-lg font-medium">{formatTime(recordingTime)}</span>
+                <span className="text-lg font-medium">
+                  {formatTime(recordingTime)}
+                </span>
               </div>
             )}
           </div>
@@ -38,19 +45,29 @@ const SpeechSection = ({
             <button
               onClick={handleRecording}
               className={`font-medium px-6 py-2 rounded-md ${
-                isRecording ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"
+                isRecording
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-blue-500 hover:bg-blue-600"
               } text-white`}
             >
               {isRecording ? "Stop Recording" : "Record Speech"}
             </button>
             <label className="bg-blue-500 text-white font-medium px-6 py-2 rounded-md hover:bg-blue-600 cursor-pointer">
               Upload Speech
-              <input type="file" accept="audio/*" className="hidden" onChange={handleAudioUpload} />
+              <input
+                type="file"
+                accept="audio/*"
+                className="hidden"
+                onChange={handleAudioUpload}
+              />
             </label>
           </div>
         </div>
 
-        <AudioRecorder ref={audioRecorderRef} onRecordingComplete={onRecordingComplete} />
+        <AudioRecorder
+          ref={audioRecorderRef}
+          onRecordingComplete={onRecordingComplete}
+        />
 
         {isRecording && (
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
@@ -82,15 +99,23 @@ const SpeechSection = ({
 
         <style jsx>{`
           @keyframes audio-wave {
-            0% { height: ${Math.random() * 100}%; }
-            50% { height: ${Math.random() * 100}%; }
-            100% { height: ${Math.random() * 100}%; }
+            0% {
+              height: ${Math.random() * 100}%;
+            }
+            50% {
+              height: ${Math.random() * 100}%;
+            }
+            100% {
+              height: ${Math.random() * 100}%;
+            }
           }
         `}</style>
 
         <div className="w-full border border-blue-500 rounded-lg bg-blue-50 p-4 mt-6">
           <div className="flex justify-between items-start mb-2">
-            {summary && <h3 className="text-lg font-medium text-gray-700">Summary</h3>}
+            {summary && (
+              <h3 className="text-lg font-medium text-gray-700">Summary</h3>
+            )}
             {summary && (
               <div className="flex items-center gap-3">
                 <button
@@ -124,6 +149,8 @@ const SpeechSection = ({
             )}
           </div>
           <p className="text-gray-600">{summary}</p>
+          {text && <h3 className="text-lg font-medium text-gray-700">Text</h3>}
+          <p className="text-gray-600">{text}</p>
         </div>
         <div className="flex justify-end gap-4 mt-4">
           {summary && (
@@ -157,4 +184,4 @@ const SpeechSection = ({
   );
 };
 
-export default SpeechSection; 
+export default SpeechSection;

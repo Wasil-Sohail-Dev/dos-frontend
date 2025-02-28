@@ -84,7 +84,7 @@ const AdminDashboardHomePage = () => {
         onSuccess: () => {}
       })
     );
-  };
+};
 
   console.log("transformedUsers", usersData);
 

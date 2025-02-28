@@ -26,9 +26,24 @@ const sidebar = [
     link: "/user-management",
   },
   {
+    name: "Kyc Management",
+    icon: <FaUser />,
+    link: "/kyc-management",
+  },
+  {
+    name: "Admin Management",
+    icon: <FaUser />,
+    link: "/admin-management",
+  },
+  {
     name: "Summaries",
     icon: <MdEditDocument />,
     link: "/document-summeries",
+  },
+  {
+    name: "Summaries History",
+    icon: <FaUser />,
+    link: "/summary-history",
   },
   {
     name: "User Profile",
@@ -44,7 +59,7 @@ const sidebar = [
     name: "Ask Questions to AI",
     icon: <FaCommentDots />,
     link: "/chat",
-  }
+  },
 ];
 
 export const SideBarDashboard = () => {
@@ -56,12 +71,15 @@ export const SideBarDashboard = () => {
   const { role } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if(role === "patient"){
-      setSidebarList(sidebar)
-    }else{
-      setSidebarList([...sidebar.slice(0, 3), sidebar[sidebar.length - 1]])
+    if (role === "patient") {
+      setSidebarList(
+        sidebar.filter((item) => item.link !== "/admin-management" && item.link !== "/kyc-management" )
+      );
+    } else {
+      setSidebarList([...sidebar.slice(0, 5)]);
     }
-  }, [role])
+  }, [role]);
+
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
@@ -84,19 +102,41 @@ export const SideBarDashboard = () => {
         onClick={handleToggle}
       >
         {isOpen ? (
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
           </svg>
         )}
       </button>
 
       {/* Overlay */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={handleToggle}
         />
@@ -112,41 +152,43 @@ export const SideBarDashboard = () => {
 
         <nav className="h-[calc(100vh-96px)] overflow-y-auto">
           <ul className="space-y-2 px-4">
-            {sidebarList.filter(item => {
-              if(role === "patient"){
-                return item.name !== "User Management"
-              }
-              return item
-            }).map((item, index) => {
-              const isActive = location.pathname === item.link;
+            {sidebarList
+              .filter((item) => {
+                if (role === "patient") {
+                  return item.name !== "User Management";
+                }
+                return item;
+              })
+              .map((item, index) => {
+                const isActive = location.pathname === item.link;
 
-              return (
-                <li key={index}>
-                  <Link
-                    to={item.link}
-                    className={`flex items-center py-3 px-4 rounded-lg cursor-pointer transition-colors ${
-                      isActive
-                        ? "bg-[#378AF2] text-white"
-                        : "text-gray-400 hover:bg-gray-50"
-                    }`}
-                    onClick={() => {
-                      if (window.innerWidth < 1024) {
-                        setIsOpen(false);
-                      }
-                    }}
-                  >
-                    <span className="mr-4">
-                      {React.cloneElement(item.icon, {
-                        color: isActive ? "white" : "#3A8EF6",
-                        size: 20,
-                      })}
-                    </span>
-                    <span className="text-[16px]">{item.name}</span>
-                  </Link>
-                </li>
-              );
-            })}
-            
+                return (
+                  <li key={index}>
+                    <Link
+                      to={item.link}
+                      className={`flex items-center py-3 px-4 rounded-lg cursor-pointer transition-colors ${
+                        isActive
+                          ? "bg-[#378AF2] text-white"
+                          : "text-gray-400 hover:bg-gray-50"
+                      }`}
+                      onClick={() => {
+                        if (window.innerWidth < 1024) {
+                          setIsOpen(false);
+                        }
+                      }}
+                    >
+                      <span className="mr-4">
+                        {React.cloneElement(item.icon, {
+                          color: isActive ? "white" : "#3A8EF6",
+                          size: 20,
+                        })}
+                      </span>
+                      <span className="text-[16px]">{item.name}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+
             {/* Logout Button */}
             <li>
               <button

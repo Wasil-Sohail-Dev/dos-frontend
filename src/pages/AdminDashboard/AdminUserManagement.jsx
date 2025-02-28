@@ -5,13 +5,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllUsersFunApi } from "store/auth/services";
 import Pagination from "component/Layout/Common/Pagination";
 import Loader from "component/Loader";
+import UsersTableData from "component/Layout/Common/UsersTableData";
 
 const TABLE_COLUMNS = [
   { key: "id", label: "User ID" },
   { key: "name", label: "User Name", isItalic: true },
   { key: "email", label: "Email Address" },
   { key: "date", label: "Date Created" },
-  { key: "phone", label: "Phone Number" },
+  { key: "phone", label: "Phone" },
 ];
 
 const INITIAL_USER = { name: "", email: "" };
@@ -22,6 +23,7 @@ export default function AdminUserManagement() {
   const { data: usersData, isLoading } = useSelector(
     (state) => state.auth.allUsers
   );
+  console.log("usersData,", usersData)
   const [enabled, setEnabled] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newUser, setNewUser] = useState(INITIAL_USER);
@@ -47,6 +49,7 @@ export default function AdminUserManagement() {
         ? `${user.phone.code}${user.phone.number}`
         : "N/A",
     })) || [];
+    console.log("transformedUsers", transformedUsers)
 
   useEffect(() => {
     fetchUsers();
@@ -64,10 +67,6 @@ export default function AdminUserManagement() {
       })
     );
   };
-
-  useEffect(() => {
-    setEnabled(Array(transformedUsers.length).fill(true));
-  }, [transformedUsers.length]);
 
   const handleToggle = (index) => {
     const newEnabled = [...enabled];
@@ -104,7 +103,7 @@ export default function AdminUserManagement() {
         <Loader />
       ) : (
         <>
-          <DataTable
+          <UsersTableData
             data={transformedUsers}
             columns={TABLE_COLUMNS}
             enabledStates={enabled}
@@ -113,7 +112,7 @@ export default function AdminUserManagement() {
             onEdit={handleEdit}
           />
 
-          {usersData?.pagination && (
+          {/* {usersData?.pagination && (
             <div className="p-4">
               <Pagination
                 currentPage={currentPage}
@@ -122,7 +121,7 @@ export default function AdminUserManagement() {
                 totalResults={usersData.pagination.totalUsers}
               />
             </div>
-          )}
+          )} */}
         </>
       )}
 

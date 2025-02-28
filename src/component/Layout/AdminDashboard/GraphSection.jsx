@@ -97,9 +97,9 @@ const GraphSection = ({ data, data2 }) => {
           <h3 className="text-sm text-gray-500">Statistics</h3>
           <h2 className="text-lg font-semibold">Documents Received</h2>
         </div>
-        <select className="w-full sm:w-32 border rounded-md px-3 py-1.5 text-sm bg-white">
+        {/* <select className="w-full sm:w-32 border rounded-md px-3 py-1.5 text-sm bg-white">
           <option>Month</option>
-        </select>
+        </select> */}
       </div>
       <div className="hide-scrollbar overflow-x-auto -mx-4 md:-mx-6">
         <div className="min-w-[1524px] px-4 md:px-6">

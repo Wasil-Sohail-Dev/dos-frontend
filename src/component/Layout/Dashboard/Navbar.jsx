@@ -103,7 +103,7 @@ export const DashboardNavbar = () => {
             />
           </form>
 
-          <div className="relative">
+          {/* <div className="relative">
             <div className="w-10 h-10 bg-white/10 md:bg-white rounded-full flex items-center justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -123,7 +123,7 @@ export const DashboardNavbar = () => {
             <span className="absolute top-1 right-1 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
               1
             </span>
-          </div>
+          </div> */}
 
           <div className="w-10 h-10 rounded-full border-2 border-yellow-400 overflow-hidden">
             {user?.profilePicture ? (

@@ -4,33 +4,49 @@ import { DashboardNavbar } from "./Navbar";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { checkTokenIsValidFunApi } from "store/auth/services";
+import axios from "helper/api";
 
 export const DashboardLayout = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [showAgreement, setShowAgreement] = useState(false);
   const [isAgreed, setIsAgreed] = useState(false);
+  const [kycStatus, setKycStatus] = useState(null);
+  console.log("kycStatus", kycStatus)
+  const [showKycModal, setShowKycModal] = useState(false);
+  console.log("showKycModel",showKycModal)
   const dispatch = useDispatch();
 
-  const { isAuthenticated, role, otpVerified, validToken } = useSelector(
+  const { isAuthenticated, role, otpVerified, validToken, user } = useSelector(
     (state) => state.auth
   );
-  console.log("isAuth 17", isAuthenticated)
 
-  useEffect(() => {
-    // Check if user has already accepted the agreement
-    const hasAcceptedAgreement = localStorage.getItem("userAgreementAccepted");
-    if (isAuthenticated && !hasAcceptedAgreement) {
-      setShowAgreement(true);
-    }
-  }, [isAuthenticated]);
+  console.log("isAuth:", isAuthenticated);
 
-  const handleAgree = () => {
-    if (isAgreed) {
-      localStorage.setItem("userAgreementAccepted", "true");
-      setShowAgreement(false);
+  const fetchUserKycStatus = async () => {
+    try {
+      const response = await axios.get("/kyc/status"); // Ensure this API returns the user's KYC status
+      const kycData = response.data.data; // Access the correct API response structure
+  
+      if (kycData && kycData.kycSubmitted) {
+        setKycStatus(kycData.status);
+        
+        // Show modal if KYC is "pending" or "rejected"
+        if (kycData.status === "pending" || kycData.status === "rejected") {
+          setShowKycModal(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching KYC status:", error);
     }
   };
+  
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchUserKycStatus();
+    }
+  }, [isAuthenticated]);  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -83,55 +99,33 @@ export const DashboardLayout = () => {
             <SideBarDashboard />
 
             {/* Main Content */}
-            <main className="flex-1  overflow-auto">
+            <main className="flex-1 overflow-auto">
               <DashboardNavbar />
               <Outlet />
             </main>
           </div>
 
-          {/* User Agreement Modal */}
-          {showAgreement && (
+          {/* KYC Status Pending Modal */}
+          {showKycModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-8 max-w-xl w-full mx-4 relative">
-                {/* <button
-                  onClick={() => setShowAgreement(false)}
-                  className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-                >
-                  ×
-                </button> */}
-                <h2 className="text-2xl font-bold mb-4">User Agreement</h2>
-                <div className="prose prose-sm max-h-60 overflow-y-auto mb-6">
-                  <p className="mb-4">
-                    Welcome to our platform! Before you proceed, please read and accept our user agreement:
-                  </p>
-                  <ol className="list-decimal pl-4 space-y-2">
-                    <li>By using this service, you agree to maintain the confidentiality of your account information.</li>
-                    <li>You are responsible for all activities that occur under your account.</li>
-                    <li>We reserve the right to modify or terminate the service for any reason, without notice at any time.</li>
-                    <li>Your use of the service is at your sole risk. The service is provided on an "as is" and "as available" basis.</li>
-                    <li>You understand that we cannot and do not guarantee or warrant that files available for downloading from the internet will be free of viruses or other destructive code.</li>
-                  </ol>
-                </div>
-                <div className="flex items-center mb-6">
-                  <input
-                    type="checkbox"
-                    id="agreement"
-                    checked={isAgreed}
-                    onChange={(e) => setIsAgreed(e.target.checked)}
-                    className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                  />
-                  <label htmlFor="agreement" className="ml-2 text-sm text-gray-600">
-                    I have read and agree to the user agreement
-                  </label>
-                </div>
+                <h2 className="text-2xl font-bold mb-4 text-red-600">
+                  KYC Verification Pending
+                </h2>
+                <p className="text-gray-600 mb-4">
+                  Your KYC verification is currently pending. You will not be
+                  able to access the dashboard until your verification is
+                  approved.
+                </p>
+                <p className="text-gray-700">
+                  Please wait for the admin to review your documents. If your
+                  documents are incorrect, you may be asked to re-submit them.
+                </p>
                 <button
-                  onClick={handleAgree}
-                  disabled={!isAgreed}
-                  className={`w-full py-3 rounded-lg text-white font-medium ${
-                    isAgreed ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-300 cursor-not-allowed'
-                  } transition-colors`}
+                  onClick={() => setShowKycModal(false)}
+                  className="mt-4 w-full py-3 rounded-lg bg-red-500 text-white font-medium transition-colors hover:bg-red-600"
                 >
-                  Continue
+                  OK, I Understand
                 </button>
               </div>
             </div>

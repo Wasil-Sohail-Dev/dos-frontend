@@ -3,7 +3,6 @@ import { AlDocsSummary, AlDocsSummaryAudio } from "./contraints";
 import toast from "react-hot-toast";
 import axiosImage from "helper/api-image";
 
-
 export const AlDocsSummaryApi = createAsyncThunk(
   "documentsummary/upload/",
   async ({ data, onSuccess, isFile }) => {
@@ -13,10 +12,16 @@ export const AlDocsSummaryApi = createAsyncThunk(
       if (response.data.status === "success") {
 
         if (onSuccess) {
-          if (response.data.data.health_summary) {
-            onSuccess(response.data.data.health_summary);
+          if (response.data.data) {
+            console.log("response data",response.data)
+
+            console.log("16",response.data.data)
+            onSuccess(response.data.data);
           }else{
             onSuccess(response.data.data.message);
+            console.log("16",response.data.data)
+            toast.success(response.data.data.message);
+
           }
           toast.success("Document Uploaded Successfully");
         }

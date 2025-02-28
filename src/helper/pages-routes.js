@@ -17,19 +17,24 @@ const AuthComponents = {
     OtpForm: lazy(() => import("../component/Layout/AuthLayout/Auth/Otp").then(module => ({ default: module.OtpForm })))
   };
   
-  const DashboardPages = {
+  const DashboardPages = { 
     DashboardHomePage: lazy(() => import("../pages/Dashboard/Home").then(module => ({ default: module.DashboardHomePage }))),
     DocumentManagement: lazy(() => import("../pages/Dashboard/DocumentManagment").then(module => ({ default: module.DocumentManagement }))),
     DocumentOverview: lazy(() => import("../pages/Dashboard/DocumentOverview").then(module => ({ default: module.DocumentOverview }))),
     ProfileUpdate: lazy(() => import("../pages/Dashboard/ProfileUpdate").then(module => ({ default: module.ProfileUpdate }))),
     Summaries: lazy(() => import("../pages/Dashboard/Summeries").then(module => ({ default: module.Summaries }))),
+    DocumentHistory: lazy(() => import("../pages/Dashboard/DocumentHistory").then(module => ({ default: module.DocumentHistory }))),
     ChatWithAi: lazy(() => import("../pages/Dashboard/ChatWithAi")),
+    // KycManagement: lazy(() => import("../pages/Dashboard/KycManagement")),
+
   };
   
   const AdminPages = {
     AdminDashboardHomePage: lazy(() => import("../pages/AdminDashboard/AdminDashboardHomePage")),
     AdminDocumentManagment: lazy(() => import("../pages/AdminDashboard/AdminDocumentManagment")),
-    AdminUserManagement: lazy(() => import("../pages/AdminDashboard/AdminUserManagement"))
+    AdminUserManagement: lazy(() => import("../pages/AdminDashboard/AdminUserManagement")),
+    AdminInvitation: lazy(() => import("../pages/AdminDashboard/AdminInvitation")),
+    KycManagement: lazy(() => import("../pages/AdminDashboard/KycManagement"))
   };
   
   const Layouts = {

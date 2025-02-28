@@ -131,7 +131,7 @@ export const DashboardHomePage = () => {
             Select File
             <input
               type="file"
-              multiple
+            multiple
               className="hidden"
               onChange={handleFileChange}
             />

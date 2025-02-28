@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
-import { FaDownload, FaCopy } from 'react-icons/fa';
-import ButtonWithLoading from 'component/LoadingButton';
+import React, { useState } from "react";
+import { FaDownload, FaCopy } from "react-icons/fa";
+import ButtonWithLoading from "component/LoadingButton";
 
-const SummaryModal = ({ doc, onClose, handleGenerateSummary, isGenerating }) => {
+const SummaryModal = ({
+  doc,
+  onClose,
+  handleGenerateSummary,
+  isGenerating,
+}) => {
   const [showModalCopyTooltip, setShowModalCopyTooltip] = useState(false);
+  console.log("doc", doc);
 
   const handleModalCopy = (text) => {
     navigator.clipboard.writeText(text);
@@ -27,9 +33,22 @@ const SummaryModal = ({ doc, onClose, handleGenerateSummary, isGenerating }) => 
               <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
             </div>
           </div>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -41,7 +60,9 @@ const SummaryModal = ({ doc, onClose, handleGenerateSummary, isGenerating }) => 
               <div className="flex items-center space-x-4">
                 <button
                   onClick={() => {
-                    const blob = new Blob([doc.summary], { type: "text/plain" });
+                    const blob = new Blob([doc.summary], {
+                      type: "text/plain",
+                    });
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement("a");
                     a.href = url;
@@ -73,7 +94,9 @@ const SummaryModal = ({ doc, onClose, handleGenerateSummary, isGenerating }) => 
             <p className="text-gray-600 whitespace-pre-wrap">{doc.summary}</p>
           ) : (
             <div className="text-center py-4">
-              <p className="text-gray-500 italic mb-4">No summary available for this document.</p>
+              <p className="text-gray-500 italic mb-4">
+                No summary available for this document.
+              </p>
               <ButtonWithLoading
                 onClick={() => handleGenerateSummary(doc.fileUrl)}
                 isLoading={isGenerating}
@@ -82,6 +105,17 @@ const SummaryModal = ({ doc, onClose, handleGenerateSummary, isGenerating }) => 
               >
                 Generate Summary
               </ButtonWithLoading>
+            </div>
+          )}
+
+          {doc.text ? (
+            <p className="text-gray-600 whitespace-pre-wrap">{doc.text}</p>
+          ) : (
+            <div className="text-center py-4">
+              <p className="text-gray-500 italic mb-4">
+                No text available for this document.
+              </p>
+             
             </div>
           )}
         </div>
@@ -101,4 +135,4 @@ const SummaryModal = ({ doc, onClose, handleGenerateSummary, isGenerating }) => 
   );
 };
 
-export default SummaryModal; 
+export default SummaryModal;
