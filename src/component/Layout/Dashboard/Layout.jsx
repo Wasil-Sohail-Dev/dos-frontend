@@ -12,9 +12,9 @@ export const DashboardLayout = () => {
   const [showAgreement, setShowAgreement] = useState(false);
   const [isAgreed, setIsAgreed] = useState(false);
   const [kycStatus, setKycStatus] = useState(null);
-  console.log("kycStatus", kycStatus)
+  console.log("kycStatus", kycStatus);
   const [showKycModal, setShowKycModal] = useState(false);
-  console.log("showKycModel",showKycModal)
+  console.log("showKycModel", showKycModal);
   const dispatch = useDispatch();
 
   const { isAuthenticated, role, otpVerified, validToken, user } = useSelector(
@@ -23,30 +23,34 @@ export const DashboardLayout = () => {
 
   console.log("isAuth:", isAuthenticated);
 
-  const fetchUserKycStatus = async () => {
-    try {
-      const response = await axios.get("/kyc/status"); // Ensure this API returns the user's KYC status
-      const kycData = response.data.data; // Access the correct API response structure
-  
-      if (kycData && kycData.kycSubmitted) {
-        setKycStatus(kycData.status);
-        
-        // Show modal if KYC is "pending" or "rejected"
-        if (kycData.status === "pending" || kycData.status === "rejected") {
-          setShowKycModal(true);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching KYC status:", error);
-    }
-  };
-  
+    const fetchUserKycStatus = async () => {
+      try {
+        const response = await axios.get("/kyc/status"); // Ensure this API returns the user's KYC status
+        const kycData = response.data.data; // Access the correct API response structure
+        console.log("kycData.kycSubmitted", kycData.kycSubmitted);
+        if (kycData) {
+          setKycStatus(kycData.status);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchUserKycStatus();
-    }
-  }, [isAuthenticated]);  
+          if (kycData.kycSubmitted === false) {
+            setShowKycModal(true);
+          }
+
+          // Show modal if KYC is "pending" or "rejected"
+          if (kycData.status === "pending" || kycData.status === "rejected") {
+            setShowKycModal(true);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching KYC status:", error);
+      }
+    };
+
+    useEffect(() => {
+      if (isAuthenticated && role === "patient") {
+        fetchUserKycStatus();
+      }
+    }, [isAuthenticated, role]);
+    
 
   useEffect(() => {
     const fetchData = async () => {

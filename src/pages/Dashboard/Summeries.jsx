@@ -21,6 +21,8 @@ export const Summaries = () => {
   const [text, setText] = useState();
   const [docDetails, setdocDetails] = useState();
   console.log("docDetails", docDetails);
+  const [ragDetails, setragDetails] = useState();
+  console.log("rag details", ragDetails);
 
   const [audioUrl, setAudioUrl] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -138,6 +140,10 @@ export const Summaries = () => {
       formData.append("docDetails", docDetails?.doctor_name);
     }
 
+    if (audioFile) {
+      formData.append("regdetails", JSON.stringify(ragDetails[0]));
+    }
+
     try {
       await dispatch(
         UploadDocumentApi({
@@ -185,6 +191,7 @@ export const Summaries = () => {
         isFile: file ? true : false,
         onSuccess: (data) => {
           setText(data);
+          setragDetails(data);
           setSummary(data);
           setdocDetails(data?.doctor_details); // Extract doctor details from response
         },
@@ -307,6 +314,7 @@ export const Summaries = () => {
           onSuccess: (data) => {
             setText(data);
             setSummary(data.message);
+            setragDetails(data);
             setdocDetails(data?.doctor_details);
             dispatch(
               getallDocsFunApi({

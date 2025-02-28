@@ -45,3 +45,48 @@ export const sendMessage = createAsyncThunk(
     }
   }
 ); 
+
+export const sendContextMessage = createAsyncThunk(
+  'contextChat/sendMessage',
+  async ({ message, onSuccess, onError }) => {
+    console.log("Sending Context message:", message);
+    try {
+      const response = await axios.post('/chat/context', {
+        message: message
+      });
+      
+      console.log("API Response:", response.data);
+      
+      if (response.data.response) {
+        if (onSuccess) {
+          onSuccess(response.data.response);
+        }
+        return response.data.response;
+      } else {
+        console.log("Error response in chat API => ", response.data);
+        const err = "Something went wrong!";
+        console.log("err: ", err);
+        if (onError) {
+          onError(err);
+        }
+        toast.error(err);
+        throw new Error(err);
+      }
+    } catch (error) {
+      console.log("Error in Chat API ", error);
+      let err =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Something went wrong!";
+      if (err === "Network Error") {
+        err = "Please check your internet connection";
+      }
+      if (onError) {
+        onError(err);
+      }
+      toast.error(err);
+      throw new Error(err);
+    }
+  }
+); 
+

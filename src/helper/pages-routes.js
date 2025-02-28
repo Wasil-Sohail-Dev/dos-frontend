@@ -25,8 +25,7 @@ const AuthComponents = {
     Summaries: lazy(() => import("../pages/Dashboard/Summeries").then(module => ({ default: module.Summaries }))),
     DocumentHistory: lazy(() => import("../pages/Dashboard/DocumentHistory").then(module => ({ default: module.DocumentHistory }))),
     ChatWithAi: lazy(() => import("../pages/Dashboard/ChatWithAi")),
-    // KycManagement: lazy(() => import("../pages/Dashboard/KycManagement")),
-
+    ContextChat: lazy(() => import("../pages/Dashboard/ContextChat")),
   };
   
   const AdminPages = {

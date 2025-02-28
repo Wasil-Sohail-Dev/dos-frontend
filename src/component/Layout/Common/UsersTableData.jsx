@@ -55,7 +55,7 @@ export default function UsersTableData({
             {columns.map((column) => (
               <th key={column.key} className="p-3">{column.label}</th>
             ))}
-            <th className="p-3">Active/Inactive</th>
+            {/* <th className="p-3">Active/Inactive</th> */}
             <th className="p-3">Actions</th>
           </tr>
         </thead>
@@ -70,7 +70,7 @@ export default function UsersTableData({
                 <td className="p-3">{item.phone || "N/A"}</td>
 
                 {/* Toggle Active/Inactive */}
-                <td className="p-3">
+                {/* <td className="p-3">
                   <button
                     className={`relative inline-flex h-6 w-11 items-center rounded-full ${
                       enabledStates[index] ? "bg-blue-500" : "bg-gray-300"
@@ -83,7 +83,7 @@ export default function UsersTableData({
                       }`}
                     />
                   </button>
-                </td>
+                </td> */}
 
                 {/* Actions */}
                 <td className="p-3 flex space-x-3 justify-center">

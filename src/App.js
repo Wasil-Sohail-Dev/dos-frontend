@@ -58,6 +58,8 @@ export default function App() {
           <Route path="document-summeries" element={<SuspenseWrapper><DashboardPages.Summaries /></SuspenseWrapper>} />
                     <Route path="summary-history" element={<SuspenseWrapper><DashboardPages.DocumentHistory /></SuspenseWrapper>} />
           <Route path="chat" element={<SuspenseWrapper><DashboardPages.ChatWithAi /></SuspenseWrapper>} />
+          <Route path="context-chat" element={<SuspenseWrapper><DashboardPages.ContextChat /></SuspenseWrapper>} />
+
           <Route path="profile-update/:id" element={<SuspenseWrapper><DashboardPages.ProfileUpdate /></SuspenseWrapper>} />
 
         </Route> 

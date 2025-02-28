@@ -56,6 +56,11 @@ const sidebar = [
     link: "/document-overview",
   },
   {
+    name: "Ask Context Based Query",
+    icon: <FaCommentDots />,
+    link: "/context-chat",
+  },
+  {
     name: "Ask Questions to AI",
     icon: <FaCommentDots />,
     link: "/chat",
